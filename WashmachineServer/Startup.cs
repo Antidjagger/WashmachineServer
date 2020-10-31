@@ -31,6 +31,7 @@ namespace WashmachineServer
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddSingleton<IVkApi>(sp => {
                 var api = new VkApi();
                 api.Authorize(new ApiAuthParams { AccessToken = Configuration["Config:AccessToken"] });
