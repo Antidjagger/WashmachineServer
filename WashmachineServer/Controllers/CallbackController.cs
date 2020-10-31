@@ -53,7 +53,8 @@ namespace WashmachineServer.Controllers
                         {
                             RandomId = new DateTime().Millisecond,
                             PeerId = msg.PeerId.Value,
-                            Message = msg.Text
+                            Message = msg.Text,
+                            UserId = msg.UserId
                         });
                         break;
                     }
