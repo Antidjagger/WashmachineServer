@@ -29,8 +29,8 @@ namespace WashmachineServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-   
-            //services.AddControllers();
+
+            services.AddControllers();
             services.AddSingleton<IVkApi>(sp => {
                 var api = new VkApi();
                 api.Authorize(new ApiAuthParams { AccessToken = Configuration["Config:AccessToken"] });

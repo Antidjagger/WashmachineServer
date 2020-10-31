@@ -46,6 +46,7 @@ namespace WashmachineServer.Controllers
                     {
                         // Десериализация
                         var msg = Message.FromJson(new VkResponse(updates.Object));
+                       
 
                         // Отправим в ответ полученный от пользователя текст
                         _vkApi.Messages.SendAsync(new MessagesSendParams

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -21,8 +22,9 @@ namespace WashmachineServer.Controllers
 		/// Объект, инициировавший событие
 		/// Структура объекта зависит от типа уведомления
 		/// </summary>
+		/// 
 		[JsonProperty("object")]
-		public JToken Object { get; set; }
+		public JObject Object { get; set; }
 
 		/// <summary>
 		/// ID сообщества, в котором произошло событие
