@@ -49,14 +49,22 @@ namespace WashmachineServer.Controllers
                         var msg = Message.FromJson(new VkResponse(updates.Object));
 
                         // Отправим в ответ полученный от пользователя текст
-                        _vkApi.Messages.Send(new MessagesSendParams
+                        _vkApi.Messages.SendAsync(new MessagesSendParams
                         {
                             RandomId = new DateTime().Millisecond,
                             PeerId = msg.PeerId.Value,
                             Message = "SendNudes",
                             //UserId = msg.UserId.Value,
-                            
+
                         });
+                        //_vkApi.Messages.Send(new MessagesSendParams
+                        //{
+                        //    RandomId = new DateTime().Millisecond,
+                        //    PeerId = msg.PeerId.Value,
+                        //    Message = "SendNudes",
+                        //    //UserId = msg.UserId.Value,
+                            
+                        //});
                         break;
                     }
             }
