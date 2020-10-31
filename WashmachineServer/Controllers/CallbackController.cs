@@ -41,7 +41,6 @@ namespace WashmachineServer.Controllers
                     {
                         return Ok(_configuration["Config:Confirmation"]);
                     }
-                    
                 // Новое сообщение
                 case "message_new":
                     {

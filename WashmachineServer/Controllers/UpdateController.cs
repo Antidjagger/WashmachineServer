@@ -22,7 +22,7 @@ namespace WashmachineServer.Controllers
 		/// Структура объекта зависит от типа уведомления
 		/// </summary>
 		[JsonProperty("object")]
-		public JObject Object { get; set; }
+		public JToken Object { get; set; }
 
 		/// <summary>
 		/// ID сообщества, в котором произошло событие
