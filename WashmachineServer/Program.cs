@@ -22,6 +22,5 @@ namespace WashmachineServer
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-        //
     }
 }
