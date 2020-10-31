@@ -10,5 +10,9 @@
     <PackageReference Include="VkNet" Version="1.57.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="MessageHandling\" />
+  </ItemGroup>
+
 
 </Project>

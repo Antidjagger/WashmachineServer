@@ -6,6 +6,8 @@ using VkNet.Utils;
 using System;
 using VkNet.Abstractions;
 using VkNet.Model.RequestParams;
+using System.Collections;
+using VkNet.Enums.SafetyEnums;
 
 namespace WashmachineServer.Controllers
 {
@@ -46,7 +48,14 @@ namespace WashmachineServer.Controllers
                     {
                         // Десериализация
                         var msg = Message.FromJson(new VkResponse(updates.Object));
-                       
+                        IEnumerable attach = "photos58910369_1243252";
+                        var albumid = 457268977;
+                        var photos = _vkApi.Photo.Get(new PhotoGetParams
+                        {
+                            AlbumId = PhotoAlbumType.Id(albumid),
+                            OwnerId = 58910369
+                        });
+
 
                         // Отправим в ответ полученный от пользователя текст
                         _vkApi.Messages.SendAsync(new MessagesSendParams
@@ -54,9 +63,9 @@ namespace WashmachineServer.Controllers
                             RandomId = new DateTime().Millisecond,
                             PeerId = msg.PeerId.Value,
                             Message = "SendNudes",
-                            //UserId = msg.UserId.Value,
+                            Attachments = photos
 
-                        });
+                        }) ;
                         //_vkApi.Messages.Send(new MessagesSendParams
                         //{
                         //    RandomId = new DateTime().Millisecond,
