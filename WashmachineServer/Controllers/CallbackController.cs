@@ -49,11 +49,13 @@ namespace WashmachineServer.Controllers
                         // Десериализация
                         var msg = Message.FromJson(new VkResponse(updates.Object));
                         IEnumerable attach = "photos58910369_1243252";
-                        var albumid = 457268977;
+                        var albumid = 00;
                         var photos = _vkApi.Photo.Get(new PhotoGetParams
                         {
                             AlbumId = PhotoAlbumType.Id(albumid),
-                            OwnerId = 58910369
+                            OwnerId = 58910369,
+                           
+
                         });
 
 
