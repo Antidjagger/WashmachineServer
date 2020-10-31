@@ -8,14 +8,6 @@ using Newtonsoft.Json.Linq;
 
 namespace WashmachineServer.Controllers
 {
-    //public class UpdateController : Controller
-    //{
-    //    public IActionResult Index()
-    //    {
-    //        return View();
-    //    }
-    //}
-
 	[Serializable]
 	public class Updates
 	{
