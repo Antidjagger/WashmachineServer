@@ -3,12 +3,11 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using VkNet.Model;
 using VkNet.Utils;
-using WashmachineServer.Controllers;
+using System;
 using VkNet.Abstractions;
 using VkNet.Model.RequestParams;
-using System;
 
-namespace VkBot.Controllers
+namespace WashmachineServer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -18,9 +17,6 @@ namespace VkBot.Controllers
         /// Конфигурация приложения
         /// </summary>
         private readonly IConfiguration _configuration;
-
-
-
         private readonly IVkApi _vkApi;
 
         public CallbackController(IVkApi vkApi, IConfiguration configuration)
@@ -29,10 +25,10 @@ namespace VkBot.Controllers
             _configuration = configuration;
         }
 
-        public CallbackController(IConfiguration configuration)//////! to delete
-        {
-            _configuration = configuration;
-        }
+        //public CallbackController(IConfiguration configuration)//////! to delete
+        //{
+        //    _configuration = configuration;
+        //}
 
         [HttpPost]
         public IActionResult Callback([FromBody] Updates updates)
@@ -45,7 +41,7 @@ namespace VkBot.Controllers
                     {
                         return Ok(_configuration["Config:Confirmation"]);
                     }
-
+                    
                 // Новое сообщение
                 case "message_new":
                     {
