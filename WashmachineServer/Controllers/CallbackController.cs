@@ -8,6 +8,8 @@ using VkNet.Abstractions;
 using VkNet.Model.RequestParams;
 using System.Collections;
 using VkNet.Enums.SafetyEnums;
+using VkNet.Model.Attachments;
+using System.Collections.Generic;
 
 namespace WashmachineServer.Controllers
 {
@@ -20,17 +22,23 @@ namespace WashmachineServer.Controllers
         /// </summary>
         private readonly IConfiguration _configuration;
         private readonly IVkApi _vkApi;
-
+        //Список пользователей
+        private List<long> UserList;
+        //Конструктор
         public CallbackController(IVkApi vkApi, IConfiguration configuration)
         {
             _vkApi = vkApi;
             _configuration = configuration;
+
+            /// <summary>
+            /// Загрузка списка UserId пользователей из гугл-таблицы
+            /// Пока нет подключения к таблице, идёт искусственная "ручная подгрузка". К изменению!
+            /// Нужно не забыть сделать отдельный класс для хранения и загрузки списка пользователей (Нужно будет в т.ч для адекватного обновления списка).
+            /// </summary>
+            UserList.Add(550105754);
+            
         }
 
-        //public CallbackController(IConfiguration configuration)//////! to delete
-        //{
-        //    _configuration = configuration;
-        //}
 
         [HttpPost]
         public IActionResult Callback([FromBody] Updates updates)
@@ -48,33 +56,46 @@ namespace WashmachineServer.Controllers
                     {
                         // Десериализация
                         var msg = Message.FromJson(new VkResponse(updates.Object));
-                        IEnumerable attach = "photos58910369_1243252";
-                        var albumid = 00;
-                        var photos = _vkApi.Photo.Get(new PhotoGetParams
+                        if (UserList.Contains(msg.UserId.Value))
                         {
-                            AlbumId = PhotoAlbumType.Id(albumid),
-                            OwnerId = 58910369,
-                           
-
-                        });
-
-
-                        // Отправим в ответ полученный от пользователя текст
-                        _vkApi.Messages.SendAsync(new MessagesSendParams
+                            /// <summary>
+                            /// Начинаем работу с пользователем
+                            /// Пока нет подключения к гугл-таблице - фиктивная отправка сообщения, что он есть в списке
+                            /// Нужно добавить также в класс User возможность сохранить текущее состояние диалога, 
+                            /// если только сторона вконтакте не присылает это состояние при каждом запросе
+                            /// </summary>
+                            SendMessage(msg.PeerId.Value, "Вы зарегистрированы!");
+                        }
+                        else
                         {
-                            RandomId = new DateTime().Millisecond,
-                            PeerId = msg.PeerId.Value,
-                            Message = "SendNudes",
-                            Attachments = photos
+                            /// <summary>
+                            /// Если пользователь отсутствует в списках таблицы
+                            /// Пока нет функци добавления пользователя и функций рут-пользователя (а так же, пока я не разобрался с контейнерами),
+                            /// Будет просто отправка сообщения о запрете доступа и прекращение цепочки работы
+                            /// </summary>
+                            SendMessage(msg.PeerId.Value, "Вы незарегистрированы!");
+                        }
 
-                        }) ;
-                        //_vkApi.Messages.Send(new MessagesSendParams
+
+
+
+                        //_vkApi.Messages.SendAsync(new MessagesSendParams
                         //{
                         //    RandomId = new DateTime().Millisecond,
                         //    PeerId = msg.PeerId.Value,
-                        //    Message = "SendNudes",
-                        //    //UserId = msg.UserId.Value,
-                            
+                        //    Message = "SendNudes"
+                        //});
+
+                        //IEnumerable attach = "photos58910369_1243252";
+                        //var albumid = 00;
+
+
+
+
+                        //var photos = _vkApi.Photo.Get(new PhotoGetParams
+                        //{
+                        //    AlbumId = PhotoAlbumType.Id(albumid),
+                        //    OwnerId = 58910369
                         //});
                         break;
                     }
@@ -82,5 +103,20 @@ namespace WashmachineServer.Controllers
 
             return Ok("ok");
         }
+
+        /// <summary>
+        /// Метод отправки сообщений с различными перегрузками
+        /// На будущее: добавить возвращаемое значение для ловли ошибок и записи в лог
+        /// </summary>
+        public void SendMessage(long peerID, string msg)
+        {
+            _vkApi.Messages.SendAsync(new MessagesSendParams
+            {
+                RandomId = new DateTime().Millisecond,
+                PeerId = peerID,
+                Message = msg
+            });
+        }
+
     }
 }
