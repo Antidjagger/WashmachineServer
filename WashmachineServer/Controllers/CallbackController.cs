@@ -29,7 +29,7 @@ namespace WashmachineServer.Controllers
         {
             _vkApi = vkApi;
             _configuration = configuration;
-
+            UserList = new List<long>();
             /// <summary>
             /// Загрузка списка UserId пользователей из гугл-таблицы
             /// Пока нет подключения к таблице, идёт искусственная "ручная подгрузка". К изменению!

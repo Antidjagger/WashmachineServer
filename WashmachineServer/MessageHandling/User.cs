@@ -32,7 +32,7 @@ namespace WashmachineServer.MessageHandling
         public User (long userID)
         {
             //Load user info from googleSheets
-
+            WashList = new Dictionary<WashTime, bool>();
         }
 
         public bool IsWash(WashTime date)
