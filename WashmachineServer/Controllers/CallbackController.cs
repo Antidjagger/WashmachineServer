@@ -56,7 +56,7 @@ namespace WashmachineServer.Controllers
                     {
                         // Десериализация
                         var msg = Message.FromJson(new VkResponse(updates.Object));
-                        if (UserList.Contains(msg.UserId.Value))
+                        if (UserList.Contains(msg.PeerId.Value))
                         {
                             /// <summary>
                             /// Начинаем работу с пользователем
