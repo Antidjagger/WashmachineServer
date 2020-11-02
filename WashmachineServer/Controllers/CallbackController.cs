@@ -64,7 +64,13 @@ namespace WashmachineServer.Controllers
                             /// Нужно добавить также в класс User возможность сохранить текущее состояние диалога, 
                             /// если только сторона вконтакте не присылает это состояние при каждом запросе
                             /// </summary>
-                            SendMessage(msg.PeerId.Value, "Вы зарегистрированы!");
+                            //SendMessage(msg.PeerId.Value, "Вы зарегистрированы!");
+                            _vkApi.Messages.SendAsync(new MessagesSendParams
+                            {
+                                RandomId = new DateTime().Millisecond,
+                                PeerId = msg.PeerId.Value,
+                                Message = "зарегистрированы"
+                            });
                         }
                         else
                         {
@@ -73,18 +79,21 @@ namespace WashmachineServer.Controllers
                             /// Пока нет функци добавления пользователя и функций рут-пользователя (а так же, пока я не разобрался с контейнерами),
                             /// Будет просто отправка сообщения о запрете доступа и прекращение цепочки работы
                             /// </summary>
-                            SendMessage(msg.PeerId.Value, "Вы незарегистрированы!");
+
+                            _vkApi.Messages.SendAsync(new MessagesSendParams
+                            {
+                                RandomId = new DateTime().Millisecond,
+                                PeerId = msg.PeerId.Value,
+                                Message = "незарегистрированы"
+                            });
+
+                            //SendMessage(msg.PeerId.Value, "Вы незарегистрированы!");
                         }
 
 
 
 
-                        //_vkApi.Messages.SendAsync(new MessagesSendParams
-                        //{
-                        //    RandomId = new DateTime().Millisecond,
-                        //    PeerId = msg.PeerId.Value,
-                        //    Message = "SendNudes"
-                        //});
+
 
                         //IEnumerable attach = "photos58910369_1243252";
                         //var albumid = 00;
