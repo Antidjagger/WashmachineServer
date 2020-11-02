@@ -64,13 +64,13 @@ namespace WashmachineServer.Controllers
                             /// Нужно добавить также в класс User возможность сохранить текущее состояние диалога, 
                             /// если только сторона вконтакте не присылает это состояние при каждом запросе
                             /// </summary>
-                            //SendMessage(msg.PeerId.Value, "Вы зарегистрированы!");
-                            _vkApi.Messages.SendAsync(new MessagesSendParams
-                            {
-                                RandomId = new DateTime().Millisecond,
-                                PeerId = msg.PeerId.Value,
-                                Message = "зарегистрированы"
-                            });
+                            SendMessage(msg.PeerId.Value, "Вы зарегистрированы!");
+                            //_vkApi.Messages.SendAsync(new MessagesSendParams
+                            //{
+                            //    RandomId = new DateTime().Millisecond,
+                            //    PeerId = msg.PeerId.Value,
+                            //    Message = "зарегистрированы"
+                            //});
                         }
                         else
                         {
@@ -80,14 +80,14 @@ namespace WashmachineServer.Controllers
                             /// Будет просто отправка сообщения о запрете доступа и прекращение цепочки работы
                             /// </summary>
 
-                            _vkApi.Messages.SendAsync(new MessagesSendParams
-                            {
-                                RandomId = new DateTime().Millisecond,
-                                PeerId = msg.PeerId.Value,
-                                Message = "незарегистрированы"
-                            });
+                            //_vkApi.Messages.SendAsync(new MessagesSendParams
+                            //{
+                            //    RandomId = new DateTime().Millisecond,
+                            //    PeerId = msg.PeerId.Value,
+                            //    Message = "незарегистрированы"
+                            //});
 
-                            //SendMessage(msg.PeerId.Value, "Вы незарегистрированы!");
+                            SendMessage(msg.PeerId.Value, "Вы незарегистрированы!");
                         }
 
 
