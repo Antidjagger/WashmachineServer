@@ -3,42 +3,25 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Sheets.v4;
-using Google.Apis.Sheets.v4.Data;
-using Google.Apis.Services;
-using Google.Apis.Util.Store;
-
 namespace WashmachineServer.MessageHandling
 {
-    public struct WashTime
-    {
-        public ushort Day;
-        public ushort Month;
-        public ushort Year;
-        public ushort TimeInterval;
-    }
-
-
-
+    /// <summary>
+    /// Возможно, лишний для работы программы класс. Пока что его функционал - на будущее, т.к все данные можно опрашивать из БД,
+    /// а стейты диалогов VKapi присылает прямо в запросе
+    /// </summary>
     public class User
     {
         private long _UserID;
-        private Dictionary<WashTime, bool> WashList;
-
-
+        public bool IsAdmin;
+        private string _AdminPassowrd;
         public long UserID { get => _UserID; set => _UserID = value; }
+        public string AdminPassowrd { get => _AdminPassowrd; set => _AdminPassowrd = value; }
 
-        public User (long userID)
+        public User (long userID, bool isAdmin)
         {
-            //Load user info from googleSheets
-            WashList = new Dictionary<WashTime, bool>();
+            UserID = userID;
+            IsAdmin = isAdmin;
+            AdminPassowrd = "";
         }
-
-        public bool IsWash(WashTime date)
-        {
-            return WashList[date];
-        }
-
     }
 }

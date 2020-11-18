@@ -10,6 +10,7 @@ using System.Collections;
 using VkNet.Enums.SafetyEnums;
 using VkNet.Model.Attachments;
 using System.Collections.Generic;
+using WashmachineServer.MessageHandling;
 
 namespace WashmachineServer.Controllers
 {
@@ -22,21 +23,12 @@ namespace WashmachineServer.Controllers
         /// </summary>
         private readonly IConfiguration _configuration;
         private readonly IVkApi _vkApi;
-        //Список пользователей
-        private List<long> UserList;
+       
         //Конструктор
         public CallbackController(IVkApi vkApi, IConfiguration configuration)
         {
             _vkApi = vkApi;
             _configuration = configuration;
-            UserList = new List<long>();
-            /// <summary>
-            /// Загрузка списка UserId пользователей из гугл-таблицы
-            /// Пока нет подключения к таблице, идёт искусственная "ручная подгрузка". К изменению!
-            /// Нужно не забыть сделать отдельный класс для хранения и загрузки списка пользователей (Нужно будет в т.ч для адекватного обновления списка).
-            /// </summary>
-            UserList.Add(550105754);
-            
         }
 
 
@@ -56,48 +48,27 @@ namespace WashmachineServer.Controllers
                     {
                         // Десериализация
                         var msg = Message.FromJson(new VkResponse(updates.Object));
-                        if (UserList.Contains(msg.PeerId.Value))
+                        ConnectToDB connectToDB = new ConnectToDB();
+                        /// <summary>
+                        /// Начинаем работу с пользователем с очередной проверки, есть ли он в списке
+                        /// Временно, я буду просто рассказывать ему, что он есть в списке либо отсутствует в нём
+                        /// </summary>
+                        if (connectToDB.IsUserExist(msg.PeerId.Value))
                         {
-                            /// <summary>
-                            /// Начинаем работу с пользователем
-                            /// Пока нет подключения к гугл-таблице - фиктивная отправка сообщения, что он есть в списке
-                            /// Нужно добавить также в класс User возможность сохранить текущее состояние диалога, 
-                            /// если только сторона вконтакте не присылает это состояние при каждом запросе
-                            /// </summary>
+                            
                             SendMessage(msg.PeerId.Value, "Вы зарегистрированы!");
-                            //_vkApi.Messages.SendAsync(new MessagesSendParams
-                            //{
-                            //    RandomId = new DateTime().Millisecond,
-                            //    PeerId = msg.PeerId.Value,
-                            //    Message = "зарегистрированы"
-                            //});
+                            
                         }
                         else
                         {
                             /// <summary>
-                            /// Если пользователь отсутствует в списках таблицы
+                            /// Если пользователь отсутствует в списках БД
                             /// Пока нет функци добавления пользователя и функций рут-пользователя (а так же, пока я не разобрался с контейнерами),
                             /// Будет просто отправка сообщения о запрете доступа и прекращение цепочки работы
                             /// </summary>
 
-                            //_vkApi.Messages.SendAsync(new MessagesSendParams
-                            //{
-                            //    RandomId = new DateTime().Millisecond,
-                            //    PeerId = msg.PeerId.Value,
-                            //    Message = "незарегистрированы"
-                            //});
-
                             SendMessage(msg.PeerId.Value, "Вы незарегистрированы!");
                         }
-
-
-
-
-
-
-                        //IEnumerable attach = "photos58910369_1243252";
-                        //var albumid = 00;
-
 
 
 

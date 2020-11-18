@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using VkNet;
 using VkNet.Abstractions;
 using VkNet.Model;
-
+using WashmachineServer.MessageHandling;
 namespace WashmachineServer
 {
     public class Startup
@@ -21,6 +21,14 @@ namespace WashmachineServer
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            ///<summary>
+            ///Нижепреведённые вызовы использовались для отладки, к удалению по завершении проектирования подключения к PostgreSQL
+            ///</summary>
+            ConnectToDB connectToDB = new ConnectToDB();
+            List<long> lst = new List<long>();
+            //lst = connectToDB.GetUserList();
+
+            bool kek = connectToDB.IsUserExist(520105754);
         }
 
         public IConfiguration Configuration { get; }
