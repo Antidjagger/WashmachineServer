@@ -42,7 +42,7 @@ namespace WashmachineServer
             services.AddControllers().AddNewtonsoftJson();
             services.AddSingleton<IVkApi>(sp => {
                 var api = new VkApi();
-                api.Authorize(new ApiAuthParams { AccessToken = Configuration["Config:AccessToken"] });
+                api.Authorize(new ApiAuthParams { AccessToken = Environment.GetEnvironmentVariable("AccessToken") });
                 return api;
             });
             
