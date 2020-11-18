@@ -12,9 +12,12 @@ namespace WashmachineServer.MessageHandling
     public class ConnectToDB
     {
         //Строка подключения
-        private const string ConnectionString = "Host=ec2-54-247-94-127.eu-west-1.compute.amazonaws.com; Port = 5432; User Id = jvnmdnsitvcljj; Password = ee092e9fe8ed6d303ad4a7479c9c6c104d934e489b3205bfef090d5e24c02998; Database = d9qojlin1fpbfk; sslmode=Require; Trust Server Certificate=true;";
+        private string ConnectionString;
+        //private const string ConnectionString = "";
         public ConnectToDB()
         {
+            //Получаю строку из переменных окружения
+            ConnectionString = Environment.GetEnvironmentVariable("EnvironmentCS");
         }
         /// <summary>
         /// Проверка, есть ли пользователь в списках БД
