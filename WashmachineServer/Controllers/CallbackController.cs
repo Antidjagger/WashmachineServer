@@ -56,7 +56,8 @@ namespace WashmachineServer.Controllers
                         if (connectToDB.IsUserExist(msg.PeerId.Value))
                         {
                             
-                            SendMessage(msg.PeerId.Value, "Вы зарегистрированы! https://www.pvsm.ru/images/2015/02/17/avtorizaciya-i-ispolzovanie-VK-com-API-v-Xamarin-Android.png");
+                            SendMessage(msg.PeerId.Value, "Вы зарегистрированы!");
+                            SendMessage(msg.PeerId.Value, "", "https://i.stack.imgur.com/wyrTc.png");
                             
                         }
                         else
@@ -86,7 +87,7 @@ namespace WashmachineServer.Controllers
 
         /// <summary>
         /// Метод отправки сообщений с различными перегрузками
-        /// На будущее: добавить возвращаемое значение для ловли ошибок и записи в лог https://www.pvsm.ru/images/2015/02/17/avtorizaciya-i-ispolzovanie-VK-com-API-v-Xamarin-Android.png
+        /// На будущее: добавить возвращаемое значение для ловли ошибок и записи в лог 
         /// </summary>
         public void SendMessage(long peerID, string msg)
         {
@@ -97,9 +98,23 @@ namespace WashmachineServer.Controllers
                 Message = msg
             });
         }
+        //Отправка сообщения и фото
         public void SendMessage(long peerID, string msg, string way)
         {
-
+            var uploadServer = _vkApi.Photo.GetMessagesUploadServer(peerID);
+            var wc = new System.Net.WebClient();
+            var result = System.Text.Encoding.ASCII.GetString(wc.UploadFile(uploadServer.UploadUrl, way));
+            var photo = _vkApi.Photo.SaveMessagesPhoto(result);
+            _vkApi.Messages.SendAsync(new MessagesSendParams
+            {
+                RandomId = new DateTime().Millisecond,
+                PeerId = peerID,
+                Message = msg,
+                Attachments = new List<MediaAttachment>
+                {
+                    photo[0]
+                }
+            });
         }
     }
 }
