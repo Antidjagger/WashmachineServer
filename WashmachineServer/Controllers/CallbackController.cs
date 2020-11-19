@@ -57,7 +57,7 @@ namespace WashmachineServer.Controllers
                         {
                             
                             SendMessage(msg.PeerId.Value, "Вы зарегистрированы!");
-                            SendMessage(msg.PeerId.Value, "111", @"unnamed.jpg");
+                            //SendMessage(msg.PeerId.Value, "111", @"unnamed.jpg");
                             
                         }
                         else
@@ -119,6 +119,7 @@ namespace WashmachineServer.Controllers
                 Message = msg,
                 Attachments = new List<MediaAttachment>
                 {
+                    
                     photo[0]
                 }
             });
