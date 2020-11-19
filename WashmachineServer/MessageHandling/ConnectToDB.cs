@@ -38,12 +38,13 @@ namespace WashmachineServer.MessageHandling
         //Отправка основного лога в БД
         public void MainLogWriting(string text)
         {
-            string DB_Query = "INSERT INTO \"MainLog\"(LogText) VALUES (@text)";
+            string DB_Query = "INSERT INTO \"MainLog\"(LogText) VALUES (@LogText)";
 
             NpgsqlConnection DB_Connection = new NpgsqlConnection(ConnectionString);
 
             NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
-            DB_Command.Parameters.AddWithValue("text", text);
+            DB_Command.Parameters.AddWithValue("LogText", text);
+            DB_Command.Prepare();
             DB_Connection.Open(); //Открываем соединение.
             DB_Command.ExecuteScalar();
             DB_Connection.Close();
