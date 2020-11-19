@@ -103,8 +103,15 @@ namespace WashmachineServer.Controllers
         {
             var uploadServer = _vkApi.Photo.GetMessagesUploadServer(peerID);
             var wc = new System.Net.WebClient();
-            var result = System.Text.Encoding.ASCII.GetString(wc.UploadFile(uploadServer.UploadUrl, way));
+            string url = "https://cwatch.comodo.com/images/web-malware-detection-remediation.png";
+            byte[] imageByte = wc.DownloadData(url);
+            var result = System.Text.Encoding.ASCII.GetString(wc.UploadData(uploadServer.UploadUrl,imageByte));
+
+
+
+            //var result = System.Text.Encoding.ASCII.GetString(wc.UploadFile(uploadServer.UploadUrl, @"unnamed.jpg"));
             var photo = _vkApi.Photo.SaveMessagesPhoto(result);
+            
             _vkApi.Messages.SendAsync(new MessagesSendParams
             {
                 RandomId = new DateTime().Millisecond,
