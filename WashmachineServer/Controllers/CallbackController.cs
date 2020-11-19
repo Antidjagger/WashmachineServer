@@ -56,7 +56,7 @@ namespace WashmachineServer.Controllers
                         if (connectToDB.IsUserExist(msg.PeerId.Value))
                         {
                             
-                            SendMessage(msg.PeerId.Value, "Вы зарегистрированы!");
+                            SendMessage(msg.PeerId.Value, "Вы зарегистрированы! https://www.pvsm.ru/images/2015/02/17/avtorizaciya-i-ispolzovanie-VK-com-API-v-Xamarin-Android.png");
                             
                         }
                         else
@@ -86,7 +86,7 @@ namespace WashmachineServer.Controllers
 
         /// <summary>
         /// Метод отправки сообщений с различными перегрузками
-        /// На будущее: добавить возвращаемое значение для ловли ошибок и записи в лог
+        /// На будущее: добавить возвращаемое значение для ловли ошибок и записи в лог https://www.pvsm.ru/images/2015/02/17/avtorizaciya-i-ispolzovanie-VK-com-API-v-Xamarin-Android.png
         /// </summary>
         public void SendMessage(long peerID, string msg)
         {
@@ -97,6 +97,9 @@ namespace WashmachineServer.Controllers
                 Message = msg
             });
         }
+        public void SendMessage(long peerID, string msg, string way)
+        {
 
+        }
     }
 }
