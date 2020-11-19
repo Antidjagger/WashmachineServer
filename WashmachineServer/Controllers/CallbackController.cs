@@ -55,7 +55,22 @@ namespace WashmachineServer.Controllers
                         /// </summary>
                         if (connectToDB.IsUserExist(msg.PeerId.Value))
                         {
-                            
+                            try
+                            {
+                                if (connectToDB.IsUserRegistred(msg.PeerId.Value))
+                                {
+                                    SendMessage(msg.PeerId.Value, "Вы зарегистрированы!");
+                                }
+                                else
+                                {
+                                    //Здесь будет антиспам-функционал - при получении более 5 запросов от незарегистрированного пользователя (число запросов будет инкреминтироваться и храниться для каждого пользователя),
+                                    //пользователь будет добавлен в чёрный список
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                SendMessage(msg.PeerId.Value, "Произошла ошибка! Обратитесь к администратору с данным текстом ошибки: " + ex.Message);
+                            }
                             SendMessage(msg.PeerId.Value, "Вы зарегистрированы!");
                             //SendMessage(msg.PeerId.Value, "111", @"unnamed.jpg");
                             
@@ -65,9 +80,9 @@ namespace WashmachineServer.Controllers
                             /// <summary>
                             /// Если пользователь отсутствует в списках БД
                             /// Пока нет функци добавления пользователя и функций рут-пользователя (а так же, пока я не разобрался с контейнерами),
-                            /// Будет просто отправка сообщения о запрете доступа и прекращение цепочки работы
+                            /// Будет просто отправка сообщения о запрете доступа, создание записи в БД и прекращение цепочки работы
                             /// </summary>
-
+                            connectToDB.AddNewUser(msg.PeerId.Value);
                             SendMessage(msg.PeerId.Value, "Вы незарегистрированы!");
                         }
 

@@ -25,10 +25,8 @@ namespace WashmachineServer
             ///Нижепреведённые вызовы использовались для отладки, к удалению по завершении проектирования подключения к PostgreSQL
             ///</summary>
             ConnectToDB connectToDB = new ConnectToDB();
-            List<long> lst = new List<long>();
             //lst = connectToDB.GetUserList();
-
-            bool kek = connectToDB.IsUserExist(520105754);
+            connectToDB.MainLogWriting("Сервер запущен успешно");
         }
 
         public IConfiguration Configuration { get; }
