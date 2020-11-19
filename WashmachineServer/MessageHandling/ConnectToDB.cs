@@ -18,6 +18,7 @@ namespace WashmachineServer.MessageHandling
         public ConnectToDB()
         {
             //Получаю строку из переменных окружения
+
             ConnectionString = Environment.GetEnvironmentVariable("EnvironmentCS");
         }
         public string GetConnectionString()
@@ -27,25 +28,27 @@ namespace WashmachineServer.MessageHandling
         //Отправка лога ошибок в таблицу БД
         public void ErrorLogWriting(string errorText,Int16 errorType)
         {
-            string DB_Query = "INSERT INTO \"ErrorLog\"(ErrorText, ErrorType) VALUES ( " + errorText + "," + errorType.ToString() + ")";
-
+            string DB_Query = "INSERT INTO \"ErrorLog\"(\"ErrorText\", \"ErrorType\") VALUES (@errorText, @errorType)";
             NpgsqlConnection DB_Connection = new NpgsqlConnection(ConnectionString);
-            NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
             DB_Connection.Open(); //Открываем соединение.
+            NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
+            DB_Command.Parameters.AddWithValue("errorText", errorText);
+            DB_Command.Parameters.AddWithValue("errorType", errorType);
+            DB_Command.Prepare();
             DB_Command.ExecuteScalar();
             DB_Connection.Close();
         }
         //Отправка основного лога в БД
         public void MainLogWriting(string text)
         {
-            string DB_Query = "INSERT INTO \"MainLog\"(LogText) VALUES (@LogText)";
+            string DB_Query = "INSERT INTO \"MainLog\"(\"LogText\") VALUES (@LogText)";
 
             NpgsqlConnection DB_Connection = new NpgsqlConnection(ConnectionString);
-
+            DB_Connection.Open(); 
             NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
             DB_Command.Parameters.AddWithValue("LogText", text);
             DB_Command.Prepare();
-            DB_Connection.Open(); //Открываем соединение.
+           
             DB_Command.ExecuteScalar();
             DB_Connection.Close();
         }
@@ -71,11 +74,13 @@ namespace WashmachineServer.MessageHandling
         {
             try
             {
-                string DB_Query = "INSERT INTO \"Users\"(UserID) VALUES ( " + UserID.ToString() + ")";
+                string DB_Query = "INSERT INTO \"Users\"(\"UserID\") VALUES (@UserID)";
 
                 NpgsqlConnection DB_Connection = new NpgsqlConnection(ConnectionString);
                 NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
                 DB_Connection.Open();
+                DB_Command.Parameters.AddWithValue("UserID", UserID);
+                DB_Command.Prepare();
                 bool res = (bool)DB_Command.ExecuteScalar();
                 DB_Connection.Close();
                 MainLogWriting("Была добавлена запись о пользователе " + UserID.ToString());
