@@ -57,7 +57,7 @@ namespace WashmachineServer.Controllers
                         {
                             
                             SendMessage(msg.PeerId.Value, "Вы зарегистрированы!");
-                            SendMessage(msg.PeerId.Value, "", "https://i.stack.imgur.com/wyrTc.png");
+                            SendMessage(msg.PeerId.Value, "111", @"unnamed.jpg");
                             
                         }
                         else
