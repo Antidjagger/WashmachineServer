@@ -304,13 +304,13 @@ namespace WashmachineServer.Controllers
                         return 11;
                     }
                 case "3.":
-                    goto case "2";
+                    goto case "3";
                 case "сегодня":
-                    goto case "2";
+                    goto case "3";
                 case "на сегодня":
-                    goto case "2";
+                    goto case "3";
                 case "сейчас":
-                    goto case "2";
+                    goto case "3";
                 //За этот месяц
                 case "4":
                     if (connect.IsUserRecordsExist(UserID, 4))
@@ -326,15 +326,15 @@ namespace WashmachineServer.Controllers
                         return 11;
                     }
                 case "4.":
-                    goto case "1";
+                    goto case "4";
                 case "этот месяц":
-                    goto case "1";
+                    goto case "4";
                 case "текущий месяц":
-                    goto case "1";
+                    goto case "4";
                 case "месяц":
-                    goto case "1";
+                    goto case "4";
                 case "на этот месяц":
-                    goto case "1";
+                    goto case "4";
                 //За прошлую неделю
                 case "5":
                     if (connect.IsUserRecordsExist(UserID, 5))
@@ -350,11 +350,11 @@ namespace WashmachineServer.Controllers
                         return 11;
                     }
                 case "5.":
-                    goto case "1";
+                    goto case "5";
                 case "прошлая неделя":
-                    goto case "1";
+                    goto case "5";
                 case "прошедшая неделя":
-                    goto case "1";
+                    goto case "5";
                 //За прошлый месяц
                 case "6":
                     if (connect.IsUserRecordsExist(UserID, 6))
@@ -370,11 +370,11 @@ namespace WashmachineServer.Controllers
                         return 11;
                     }
                 case "6.":
-                    goto case "1";
+                    goto case "6";
                 case "прошлый месяц":
-                    goto case "1";
+                    goto case "6";
                 case "прошедший месяц":
-                    goto case "1";
+                    goto case "6";
 
                 case "отмена":
                     msg_reply = "Возврат в главное меню...";

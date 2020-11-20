@@ -194,10 +194,10 @@ namespace WashmachineServer.MessageHandling
                     DB_Query = "SELECT EXISTS (SELECT 1 FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '1 month' + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID))";
                     break;
                 case 5:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE - INTERVAL '1 week' + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '3 hours') AND (\"_UserId\" = @UserID))";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE - INTERVAL '1 week' + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID))";
                     break;
                 case 6:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE - INTERVAL '1 month' + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '3 hours') AND (\"_UserId\" = @UserID))";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE - INTERVAL '1 month' + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID))";
                     break;
                 default:
                     return false;
