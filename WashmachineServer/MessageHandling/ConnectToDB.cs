@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Npgsql;
 
 namespace WashmachineServer.MessageHandling
@@ -129,16 +130,83 @@ namespace WashmachineServer.MessageHandling
                     catch { ErrorLogWriting("The value could not be retrieved from the database or the value was read incorrectly", 2); }
                 }
                 DB_Connection.Close();
-                
             }
             else
             {
                 ErrorLogWriting("The user was polled, but was not added to the database/was removed from the database", 2);
                 throw new Exception("The record about user with id " + UserID.ToString() + " does not exist in the database");
-
             }
             return false;
         }
+        //Для конкретной даты
+        public bool IsUserRecordsExist(long UserID, string interval)
+        {
+            NpgsqlConnection DB_Connection = new NpgsqlConnection(ConnectionString);
+            try
+            {
+                string DB_Query = "SELECT EXISTS (SELECT 1 FROM  \"Records\" WHERE (\"RecordDate\" = @UserDate) AND (\"_UserId\" = @UserID))";
+                NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
+                DB_Connection.Open();
+                DB_Command.Parameters.AddWithValue("UserID", UserID);
+                DB_Command.Parameters.AddWithValue("UserDate", interval);
+                DB_Command.Prepare();
+                bool res = (bool)DB_Command.ExecuteScalar();
+                DB_Connection.Close();
+                return res;
+            }
+            catch 
+            { 
+                ErrorLogWriting("The value could not be retrieved from the database or the value was read incorrectly (Can't check user's records on existing in user-writed diapazone)", 2);
+                return false;
+            }
+
+        }
+        //Для заготовленных промежутков
+        public bool IsUserRecordsExist(long UserID, Int16 interval)
+        {
+            NpgsqlConnection DB_Connection = new NpgsqlConnection(ConnectionString); 
+
+            string DB_Query = ""; 
+            switch (interval)
+            {
+                /// <summary>
+                /// Нижепреведённые запросы составлены с учётом того, что время сервера - GMT+0, а время клиентов - московское (GMT+3)
+                /// В дальнейшем в конфигурации будут добавлены соответствующие настройки
+                /// </summary>
+                case 1:
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '1 week' + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID))";
+                    break;
+                case 2:
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '1 week' + INTERVAL '3 hours' ) AND (CURRENT_DATE + INTERVAL '2 week'+ INTERVAL '3 hours')) AND (\"_UserId\" =@UserID))";
+                    break;
+                case 3:
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM  \"Records\" WHERE (\"RecordDate\" = CURRENT_DATE) AND (\"_UserId\" = @UserID))";
+                    break;
+                case 4:
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '1 month' + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID))";
+                    break;
+                case 5:
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE - INTERVAL '1 week' + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '3 hours') AND (\"_UserId\" = @UserID))";
+                    break;
+                case 6:
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE - INTERVAL '1 month' + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '3 hours') AND (\"_UserId\" = @UserID))";
+                    break;
+                default:
+                    return false;
+            }
+            NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
+            DB_Connection.Open();
+            DB_Command.Parameters.AddWithValue("UserID", UserID);
+            DB_Command.Prepare();
+            bool res = (bool)DB_Command.ExecuteScalar();
+            DB_Connection.Close();
+            return res;
+        }
+        //public bool GetUserRecords(long UserID, Int16 interval)
+        //{
+
+        //}
+
         public Int16 GetUserDialogStage(long UserID)
         {
             string DB_Query = "SELECT \"DialogStage\" FROM \"Users\" WHERE \"UserID\" = " + UserID.ToString();
