@@ -26,7 +26,7 @@ namespace WashmachineServer
             ///</summary>
             ConnectToDB connectToDB = new ConnectToDB();
             //lst = connectToDB.GetUserList();
-            connectToDB.MainLogWriting("Сервер запущен успешно");
+            connectToDB.MainLogWriting("Server started");
         }
 
         public IConfiguration Configuration { get; }

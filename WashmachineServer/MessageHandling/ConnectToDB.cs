@@ -31,7 +31,9 @@ namespace WashmachineServer.MessageHandling
             string DB_Query = "INSERT INTO \"ErrorLog\"(\"ErrorText\", \"ErrorType\") VALUES (@errorText, @errorType)";
             NpgsqlConnection DB_Connection = new NpgsqlConnection(ConnectionString);
             DB_Connection.Open(); //Открываем соединение.
+            
             NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
+     
             DB_Command.Parameters.AddWithValue("errorText", errorText);
             DB_Command.Parameters.AddWithValue("errorType", errorType);
             DB_Command.Prepare();
@@ -69,6 +71,7 @@ namespace WashmachineServer.MessageHandling
             return res;
 
         }
+
         //Добавление записи о пользователе в БД
         public bool AddNewUser(long UserID)
         {
@@ -83,12 +86,12 @@ namespace WashmachineServer.MessageHandling
                 DB_Command.Prepare();
                 bool res = (bool)DB_Command.ExecuteScalar();
                 DB_Connection.Close();
-                MainLogWriting("Была добавлена запись о пользователе " + UserID.ToString());
+                MainLogWriting("An record about user with ID " + UserID.ToString() + " was added");
                 return res;
             }
             catch 
             {
-                ErrorLogWriting("Не удалось добавить пользователя в базу данных", 2);
+                ErrorLogWriting("Failed to add record about user " + UserID.ToString() + " to database", 2);
                 return false;
             }
         }
@@ -123,18 +126,45 @@ namespace WashmachineServer.MessageHandling
                     ///TODO: Нужно будет добавить набор исключений для случаев, когда нет связи с БД. В принципе, пользователя это не должно волновать, но из админ-панели
                     ///должна быть возможность просмотреть все возможные проблемы без перезапуска сервера
                     ///</remarks>
-                    catch { ErrorLogWriting("Не удалось получить значение из базы данных либо значение было прочитано неверно", 2); }
+                    catch { ErrorLogWriting("The value could not be retrieved from the database or the value was read incorrectly", 2); }
                 }
                 DB_Connection.Close();
                 
             }
             else
             {
-                ErrorLogWriting("Пользователь опрошен, но не был добавлен в базу данных/был удалён из базы", 2);
-                throw new Exception("Пользователь не существует в базе данных");
+                ErrorLogWriting("The user was polled, but was not added to the database/was removed from the database", 2);
+                throw new Exception("The record about user with id " + UserID.ToString() + " does not exist in the database");
 
             }
             return false;
+        }
+        public Int16 GetUserDialogStage(long UserID)
+        {
+            string DB_Query = "SELECT \"DialogStage\" FROM \"Users\" WHERE \"UserID\" = " + UserID.ToString() + ")";
+
+            NpgsqlConnection DB_Connection = new NpgsqlConnection(ConnectionString);
+            NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
+            DB_Connection.Open();
+            NpgsqlDataReader reader;
+            reader = DB_Command.ExecuteReader();
+
+            Int16 res;
+            while (reader.Read())
+            {
+                try
+                {
+                    res = reader.GetInt16(0);
+                    return res;
+                }
+                catch { ErrorLogWriting("The value could not be retrieved from the database or the value was read incorrectly", 2); }
+            }
+            DB_Connection.Close();
+            return -1;
+        }
+        public void SetUserDialogStage(long UserID)
+        {
+
         }
         /// <summary>
         /// Заполнение списка List<> информацией о ID существующих в записях БД пользователей
@@ -163,7 +193,7 @@ namespace WashmachineServer.MessageHandling
                 ///TODO: Нужно будет добавить набор исключений для случаев, когда нет связи с БД. В принципе, пользователя это не должно волновать, но из админ-панели
                 ///должна быть возможность просмотреть все возможные проблемы без перезапуска сервера
                 ///</remarks>
-                catch { ErrorLogWriting("Не удалось получить значение из базы данных либо значение было прочитано неверно", 2); }
+                catch { ErrorLogWriting("The value could not be retrieved from the database or the value was read incorrectly", 2); }
             }
             DB_Connection.Close();
             return UserList;
