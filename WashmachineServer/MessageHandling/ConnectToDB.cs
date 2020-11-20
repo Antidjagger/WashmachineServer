@@ -162,9 +162,25 @@ namespace WashmachineServer.MessageHandling
             DB_Connection.Close();
             return -1;
         }
-        public void SetUserDialogStage(long UserID)
+        public void SetUserDialogStage(long UserID, Int16 DS)
         {
+            try
+            {
+                string DB_Query = "UPDATE \"Users\" SET \"DialogStage\" = "+ DS.ToString() +" WHERE \"UserID\" = @UserID";
 
+                NpgsqlConnection DB_Connection = new NpgsqlConnection(ConnectionString);
+                NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
+                DB_Connection.Open();
+                DB_Command.Parameters.AddWithValue("UserID", UserID);
+                DB_Command.Prepare();
+                DB_Command.ExecuteScalar();
+                DB_Connection.Close();
+                //здесь надо бы добавить отправку лога в отдельный лог-файл для пользователей
+            }
+            catch
+            {
+                ErrorLogWriting("Failed to change DialogStage for user " + UserID.ToString(), 2);
+            }
         }
         /// <summary>
         /// Заполнение списка List<> информацией о ID существующих в записях БД пользователей
