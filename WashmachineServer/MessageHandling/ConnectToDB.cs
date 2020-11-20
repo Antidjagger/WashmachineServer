@@ -39,7 +39,7 @@ namespace WashmachineServer.MessageHandling
             DB_Command.Parameters.AddWithValue("errorType", errorType);
             DB_Command.Prepare();
             DB_Command.ExecuteScalar();
-            DB_Connection.Close();
+            DB_Connection.CloseAsync();
         }
         //Отправка основного лога в БД
         public void MainLogWriting(string text)
@@ -53,7 +53,7 @@ namespace WashmachineServer.MessageHandling
             DB_Command.Prepare();
            
             DB_Command.ExecuteScalar();
-            DB_Connection.Close();
+            DB_Connection.CloseAsync();
         }
         /// <summary>
         /// Проверка, есть ли пользователь в списках БД
@@ -68,9 +68,8 @@ namespace WashmachineServer.MessageHandling
             NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
             DB_Connection.Open(); //Открываем соединение.
             bool res = (bool)DB_Command.ExecuteScalar();
-            DB_Connection.Close();
+            DB_Connection.CloseAsync();
             return res;
-
         }
 
         //Добавление записи о пользователе в БД
@@ -86,14 +85,16 @@ namespace WashmachineServer.MessageHandling
                 DB_Command.Parameters.AddWithValue("UserID", UserID);
                 DB_Command.Prepare();
                 bool res = (bool)DB_Command.ExecuteScalar();
-                DB_Connection.Close();
+                DB_Connection.CloseAsync();
                 MainLogWriting("An record about user with ID " + UserID.ToString() + " was added");
                 return res;
             }
             catch 
             {
                 ErrorLogWriting("Failed to add record about user " + UserID.ToString() + " to database", 2);
+                
                 return false;
+
             }
         }
         //Метод добавления нового пользователя, для начала нужно получить сообщение-подтверждение с ключом доступа администратора, 
@@ -121,15 +122,22 @@ namespace WashmachineServer.MessageHandling
                     try
                     {
                         res = reader.GetBoolean(0);
+                        DB_Connection.CloseAsync();
                         return res;
+
                     }
                     ///<remarks>
                     ///TODO: Нужно будет добавить набор исключений для случаев, когда нет связи с БД. В принципе, пользователя это не должно волновать, но из админ-панели
                     ///должна быть возможность просмотреть все возможные проблемы без перезапуска сервера
                     ///</remarks>
-                    catch { ErrorLogWriting("The value could not be retrieved from the database or the value was read incorrectly", 2); }
+                    catch
+                    {
+                        DB_Connection.CloseAsync(); 
+                        ErrorLogWriting("The value could not be retrieved from the database or the value was read incorrectly", 2); 
+                    }
+                    
                 }
-                DB_Connection.Close();
+                
             }
             else
             {
@@ -151,7 +159,7 @@ namespace WashmachineServer.MessageHandling
                 DB_Command.Parameters.AddWithValue("UserDate", interval);
                 DB_Command.Prepare();
                 bool res = (bool)DB_Command.ExecuteScalar();
-                DB_Connection.Close();
+                DB_Connection.CloseAsync();
                 return res;
             }
             catch 
@@ -199,7 +207,7 @@ namespace WashmachineServer.MessageHandling
             DB_Command.Parameters.AddWithValue("UserID", UserID);
             DB_Command.Prepare();
             bool res = (bool)DB_Command.ExecuteScalar();
-            DB_Connection.Close();
+            DB_Connection.CloseAsync();
             return res;
         }
         //public bool GetUserRecords(long UserID, Int16 interval)
@@ -223,11 +231,16 @@ namespace WashmachineServer.MessageHandling
                 try
                 {
                     res = reader.GetInt16(0);
+                    DB_Connection.CloseAsync();
                     return res;
                 }
-                catch { ErrorLogWriting("The value could not be retrieved from the database or the value was read incorrectly", 2); }
+                catch
+                {
+                    DB_Connection.CloseAsync(); 
+                    ErrorLogWriting("The value could not be retrieved from the database or the value was read incorrectly", 2); 
+                }
             }
-            DB_Connection.Close();
+            DB_Connection.CloseAsync();
             return -1;
         }
         public void SetUserDialogStage(long UserID, Int16 DS)
@@ -242,7 +255,7 @@ namespace WashmachineServer.MessageHandling
                 DB_Command.Parameters.AddWithValue("UserID", UserID);
                 DB_Command.Prepare();
                 DB_Command.ExecuteScalar();
-                DB_Connection.Close();
+                DB_Connection.CloseAsync();
                 //здесь надо бы добавить отправку лога в отдельный лог-файл для пользователей
             }
             catch
@@ -277,9 +290,13 @@ namespace WashmachineServer.MessageHandling
                 ///TODO: Нужно будет добавить набор исключений для случаев, когда нет связи с БД. В принципе, пользователя это не должно волновать, но из админ-панели
                 ///должна быть возможность просмотреть все возможные проблемы без перезапуска сервера
                 ///</remarks>
-                catch { ErrorLogWriting("The value could not be retrieved from the database or the value was read incorrectly", 2); }
+                catch 
+                {
+                    DB_Connection.CloseAsync();
+                    ErrorLogWriting("The value could not be retrieved from the database or the value was read incorrectly", 2); 
+                }
             }
-            DB_Connection.Close();
+            DB_Connection.CloseAsync();
             return UserList;
                 
         }
