@@ -170,7 +170,7 @@ namespace WashmachineServer.Controllers
 
         public void DS_0(long UserID)
         {
-            string msg_reply = "Главное меню. Выберите варианты: %0A 1. Просмотреть свои записи на стирку %0A 2. Записаться на стирку";
+            string msg_reply = "Главное меню. Выберите варианты:\n 1. Просмотреть свои записи на стирку \n 2. Записаться на стирку";
             SendMessage(UserID, msg_reply);
         }
         public void DS_1(long UserID, string msg)
