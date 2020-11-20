@@ -106,7 +106,7 @@ namespace WashmachineServer.MessageHandling
         {
             if (IsUserExist(UserID))
             {
-                string DB_Query = "SELECT \"IsRegistred\" FROM \"Users\" WHERE \"UserID\" = " + UserID.ToString() + ")";
+                string DB_Query = "SELECT \"IsRegistred\" FROM \"Users\" WHERE \"UserID\" = " + UserID.ToString();
 
                 NpgsqlConnection DB_Connection = new NpgsqlConnection(ConnectionString);
                 NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
@@ -141,7 +141,7 @@ namespace WashmachineServer.MessageHandling
         }
         public Int16 GetUserDialogStage(long UserID)
         {
-            string DB_Query = "SELECT \"DialogStage\" FROM \"Users\" WHERE \"UserID\" = " + UserID.ToString() + ")";
+            string DB_Query = "SELECT \"DialogStage\" FROM \"Users\" WHERE \"UserID\" = " + UserID.ToString();
 
             NpgsqlConnection DB_Connection = new NpgsqlConnection(ConnectionString);
             NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
