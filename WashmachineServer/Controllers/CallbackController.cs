@@ -193,7 +193,7 @@ namespace WashmachineServer.Controllers
             MsgToCase.TrimStart();
             MsgToCase.TrimEnd();
 
-            switch (dictionaryCollections.DS_1(msg.ToLower()))
+            switch (dictionaryCollections.DS_1(MsgToCase))
             {
                 case 0:
                     msg_reply = "Возврат в главное меню...";
@@ -219,60 +219,14 @@ namespace WashmachineServer.Controllers
             string msg_reply = "";
             MsgToCase.TrimStart();
             MsgToCase.TrimEnd();
-
-
-
-
-            switch (msg.ToLower())
+            switch (dictionaryCollections.DS_1_1(MsgToCase))
             {
-                //За эту неделю
-                case "1":
-                    if (connect.IsUserRecordsExist(UserID,1))
-                    {
-                        msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
-                        SendMessage(UserID, msg_reply);
-                        return DS_0(UserID);
-                    }
-                    else 
-                    {
-                        msg_reply = "У вас нет записей на эту неделю. Повторно выберите интервал или напишите \"Отмена\" для возврата в главное меню:";
-                        SendMessage(UserID, msg_reply);
-                        return 11;
-                    }
-                case "1.":
-                    goto case "1";
-                case "эта неделя":
-                    goto case "1";
-                case "на эту неделю":
-                    goto case "1";
-                case "текущая неделя":
-                    goto case "1";
-                case "неделя":
-                    goto case "1";
-                //За следующую неделю
-                case "2":
-                    if (connect.IsUserRecordsExist(UserID, 2))
-                    {
-                        msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
-                        SendMessage(UserID, msg_reply);
-                        return DS_0(UserID);
-                    }
-                    else
-                    {
-                        msg_reply = "У вас нет записей на следующую неделю. Повторно выберите интервал или напишите \"Отмена\" для возврата в главное меню:";
-                        SendMessage(UserID, msg_reply);
-                        return 11;
-                    }
-                case "следующая неделя":
-                    goto case "2";
-                case "на следующую неделю":
-                    goto case "2";
-                case "на следующей неделе":
-                    goto case "2";
-                case "2.":
-                    goto case "2";
+                case 0:
+                    msg_reply = "Возврат в главное меню...";
+                    SendMessage(UserID, msg_reply);
+                    return DS_0(UserID);
+                case 1:
                 //За сегодня
-                case "3":
                     if (connect.IsUserRecordsExist(UserID, 3))
                     {
                         msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
@@ -285,16 +239,33 @@ namespace WashmachineServer.Controllers
                         SendMessage(UserID, msg_reply);
                         return 11;
                     }
-                case "3.":
-                    goto case "3";
-                case "сегодня":
-                    goto case "3";
-                case "на сегодня":
-                    goto case "3";
-                case "сейчас":
-                    goto case "3";
-                //За этот месяц
-                case "4":
+                case 2:
+                    if (connect.IsUserRecordsExist(UserID, 1))
+                    {
+                        msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
+                        SendMessage(UserID, msg_reply);
+                        return DS_0(UserID);
+                    }
+                    else
+                    {
+                        msg_reply = "У вас нет записей на эту неделю. Повторно выберите интервал или напишите \"Отмена\" для возврата в главное меню:";
+                        SendMessage(UserID, msg_reply);
+                        return 11;
+                    }
+                case 3:
+                    if (connect.IsUserRecordsExist(UserID, 2))
+                    {
+                        msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
+                        SendMessage(UserID, msg_reply);
+                        return DS_0(UserID);
+                    }
+                    else
+                    {
+                        msg_reply = "У вас нет записей на следующую неделю. Повторно выберите интервал или напишите \"Отмена\" для возврата в главное меню:";
+                        SendMessage(UserID, msg_reply);
+                        return 11;
+                    }
+                case 4:
                     if (connect.IsUserRecordsExist(UserID, 4))
                     {
                         msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
@@ -307,18 +278,7 @@ namespace WashmachineServer.Controllers
                         SendMessage(UserID, msg_reply);
                         return 11;
                     }
-                case "4.":
-                    goto case "4";
-                case "этот месяц":
-                    goto case "4";
-                case "текущий месяц":
-                    goto case "4";
-                case "месяц":
-                    goto case "4";
-                case "на этот месяц":
-                    goto case "4";
-                //За прошлую неделю
-                case "5":
+                case 5:
                     if (connect.IsUserRecordsExist(UserID, 5))
                     {
                         msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
@@ -331,14 +291,7 @@ namespace WashmachineServer.Controllers
                         SendMessage(UserID, msg_reply);
                         return 11;
                     }
-                case "5.":
-                    goto case "5";
-                case "прошлая неделя":
-                    goto case "5";
-                case "прошедшая неделя":
-                    goto case "5";
-                //За прошлый месяц
-                case "6":
+                case 6:
                     if (connect.IsUserRecordsExist(UserID, 6))
                     {
                         msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
@@ -351,23 +304,11 @@ namespace WashmachineServer.Controllers
                         SendMessage(UserID, msg_reply);
                         return 11;
                     }
-                case "6.":
-                    goto case "6";
-                case "прошлый месяц":
-                    goto case "6";
-                case "прошедший месяц":
-                    goto case "6";
-
-                case "отмена":
-                    msg_reply = "Возврат в главное меню...";
-                    SendMessage(UserID, msg_reply);
-                    return DS_0(UserID);
                 default:
-                    
                     if (dictionaryCollections.IsInDateFormat(msg))
                     {
                         string DateMsg = dictionaryCollections.ConverToPostgreDate(msg);
-                        if (DateMsg!=null)
+                        if (DateMsg != null)
                         {
                             if (connect.IsUserRecordsExist(UserID, msg))
                             {
@@ -388,7 +329,7 @@ namespace WashmachineServer.Controllers
                             SendMessage(UserID, msg_reply);
                             return 11;
                         }
-                        
+
                     }
                     else
                     {

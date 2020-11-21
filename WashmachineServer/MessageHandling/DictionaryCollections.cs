@@ -101,6 +101,7 @@ namespace WashmachineServer.MessageHandling
             }
             
         }
+        //Работа с DialogStage 1 (ответы на главное меню)
         public Int16 DS_1(string msg)
         {
             if (DS_1_GetRecords.Contains(msg))
@@ -125,6 +126,67 @@ namespace WashmachineServer.MessageHandling
                     }
                 }
             }
+        }
+        //Работа с DialogStage 1_1 (ответы на меню вывода записей)
+        public Int16 DS_1_1(string msg)
+        {
+            if (DS_1_1_GR_Today.Contains(msg))
+            {
+                return 1;
+            }
+            else
+            {
+                if (DS_1_1_GR_ThisWeek.Contains(msg))
+                {
+                    return 2;
+                }
+                else
+                {
+                    if (DS_1_1_GR_NextWeek.Contains(msg))
+                    {
+                        return 3;
+                    }
+                    else
+                    {
+                        if (DS_1_1_GR_ThisMonth.Contains(msg))
+                        {
+                            return 4;
+                        }
+                        else
+                        {
+                            if (DS_1_1_GR_LastWeek.Contains(msg))
+                            {
+                                return 5;
+                            }
+                            else
+                            {
+                                if (DS_1_1_GR_LastMonth.Contains(msg))
+                                {
+                                    return 6;
+                                }
+                                else
+                                {
+                                    if (msg == "отмена")
+                                    {
+                                        return 0;
+                                    }
+                                    else
+                                    {
+                                        return -1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    
+                }
+            }
+        }
+        //Работа с DialogStage 1_2 (ответы на меню создания записей)
+        public Int16 DS_1_2(string msg)
+        {
+            return 0;
         }
     }
 }
