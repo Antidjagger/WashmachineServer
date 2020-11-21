@@ -1,17 +1,24 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Text.RegularExpressions;
+using System.Collections;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using VkNet.Model;
 using VkNet.Utils;
-using System;
 using VkNet.Abstractions;
 using VkNet.Model.RequestParams;
-using System.Collections;
-using VkNet.Enums.SafetyEnums;
 using VkNet.Model.Attachments;
-using System.Collections.Generic;
+using VkNet.Enums.SafetyEnums;
+using VkNet.Infrastructure;
+using VkNet.Categories;
+using VkNet.Model.Keyboard;
+using VkNet.UWP;
 using WashmachineServer.MessageHandling;
-using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace WashmachineServer.Controllers
 {
@@ -134,6 +141,43 @@ namespace WashmachineServer.Controllers
 
             return Ok("ok");
         }
+        private async Task<string> UploadFile(string serverUrl, string file, string fileExtension, bool urlOrFilepath)
+        {
+            byte[] data;
+            // Получение массива байтов из файла
+            //if (urlOrFilepath)
+            //{
+                data = GetBytesFromURL(file);
+            //}
+            //else
+            //{
+            //    data = GetBytesFromFile(file);
+            //}
+
+            // Создание запроса на загрузку файла на сервер
+            using (var client = new HttpClient())
+            {
+                var requestContent = new MultipartFormDataContent();
+                var content = new ByteArrayContent(data);
+                content.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
+                requestContent.Add(content, "file", $"file.{fileExtension}");
+
+                var response = client.PostAsync(serverUrl, requestContent).Result;
+                return System.Text.Encoding.Default.GetString(await response.Content.ReadAsByteArrayAsync());
+            }
+        }
+
+        private byte[] GetBytesFromURL(string fileUrl)
+        {
+            using (var webClient = new System.Net.WebClient())
+            {
+                return webClient.DownloadData(fileUrl);
+            }
+        }
+        //private byte[] GetBytesFromFile(string filePath)
+        //{
+        //    return File.ReadAllBytes(filePath);
+        //}
 
         /// <summary>
         /// Метод отправки сообщений с различными перегрузками
@@ -148,27 +192,26 @@ namespace WashmachineServer.Controllers
                 Message = msg
             });
         }
+       
+
+
+
         //Отправка сообщения и фото
-        public void SendMessage(long peerID, string msg, string way)
+        public async void SendMessage(long UserID, string msg, string urlway, string filetype)
         {
-            var uploadServer = _vkApi.Photo.GetMessagesUploadServer(peerID);
-            var wc = new System.Net.WebClient();
-            string url = "https://cwatch.comodo.com/images/web-malware-detection-remediation.png";
-            byte[] imageByte = wc.DownloadData(url);
-            var result = System.Text.Encoding.ASCII.GetString(wc.UploadData(uploadServer.UploadUrl,imageByte));
-            //var result = System.Text.Encoding.ASCII.GetString(wc.UploadFile(uploadServer.UploadUrl, @"unnamed.jpg"));
-            var photo = _vkApi.Photo.SaveMessagesPhoto(result);
-            
-            _vkApi.Messages.SendAsync(new MessagesSendParams
+            var uploadServer = _vkApi.Photo.GetMessagesUploadServer(UserID);
+            var response = await UploadFile(uploadServer.UploadUrl, urlway, filetype, true);
+            // Сохранить загруженный файл
+            var attachment = _vkApi.Photo.SaveMessagesPhoto(response);
+
+
+           
+            _vkApi.Messages.Send(new MessagesSendParams
             {
                 RandomId = new DateTime().Millisecond,
-                PeerId = peerID,
+                PeerId = UserID,
                 Message = msg,
-                Attachments = new List<MediaAttachment>
-                {
-                    
-                    photo[0]
-                }
+                Attachments = attachment
             });
         }
 
@@ -180,7 +223,9 @@ namespace WashmachineServer.Controllers
         public Int16 DS_0(long UserID)
         {
             string msg_reply = "Главное меню. Выберите варианты:\n 1. Просмотреть свои записи на стирку \n 2. Записаться на стирку\n В любой момент можно написать \"Отмена\" для возвращения в главное меню";
-            SendMessage(UserID, msg_reply);
+            SendMessage(UserID, msg_reply, "https://miro.medium.com/max/1200/1*PR3N41Yzq0bEQw9imFmrJQ.png","png");
+
+
             return 1;
         }
         public Int16 DS_1(long UserID, string msg)
