@@ -127,18 +127,9 @@ namespace WashmachineServer.Controllers
                             connectToDB.AddNewUser(msg.PeerId.Value);
                             SendMessage(msg.PeerId.Value, "Вы незарегистрированы!");
                         }
-
-
-
-                        //var photos = _vkApi.Photo.Get(new PhotoGetParams
-                        //{
-                        //    AlbumId = PhotoAlbumType.Id(albumid),
-                        //    OwnerId = 58910369
-                        //});
                         break;
                     }
             }
-
             return Ok("ok");
         }
         private async Task<string> UploadFileFromUrl(string serverUrl, string file, string fileExtension)
@@ -147,7 +138,7 @@ namespace WashmachineServer.Controllers
             // Получение массива байтов из файла
             //if (urlOrFilepath)
             //{
-            byte[] data = GetBytesFromURL(file);
+            var data = GetBytesFromURL(file);
             //}
             //else
             //{
@@ -203,9 +194,6 @@ namespace WashmachineServer.Controllers
             var response = await UploadFileFromUrl(uploadServer.UploadUrl, urlway, filetype);
             // Сохранить загруженный файл
             var attachment = _vkApi.Photo.SaveMessagesPhoto(response);
-
-
-           
             _vkApi.Messages.Send(new MessagesSendParams
             {
                 RandomId = new DateTime().Millisecond,
@@ -223,9 +211,7 @@ namespace WashmachineServer.Controllers
         public Int16 DS_0(long UserID)
         {
             string msg_reply = "Главное меню. Выберите варианты:\n 1. Просмотреть свои записи на стирку \n 2. Записаться на стирку\n В любой момент можно написать \"Отмена\" для возвращения в главное меню";
-            SendMessage(UserID, msg_reply, "https://miro.medium.com/max/1200/1*PR3N41Yzq0bEQw9imFmrJQ.png","png");
-
-
+            SendMessage(UserID, msg_reply, "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
             return 1;
         }
         public Int16 DS_1(long UserID, string msg)
