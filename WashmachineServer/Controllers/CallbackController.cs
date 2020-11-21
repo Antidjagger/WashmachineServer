@@ -24,7 +24,7 @@ namespace WashmachineServer.Controllers
         /// </summary>
         private readonly IConfiguration _configuration;
         private readonly IVkApi _vkApi;
-       
+        private DictionaryCollections dictionaryCollections;
         //Конструктор
         public CallbackController(IVkApi vkApi, IConfiguration configuration)
         {
@@ -187,52 +187,30 @@ namespace WashmachineServer.Controllers
         {
             //В дальнейшем эту конструкцию надо бы оптимизировать, путём добавления алгоритма сравнения строк по близости к результату, с добавлением некоторых исключений для случаев,
             //в которых строка может относиться к разным выборам
-            //(Не дай хаос кто-то увидит этот кошмар)
+            //(Не дай хаос кто-то увидит этот кошмар) (но уже не так страшно)
             string MsgToCase = msg.ToLower();
             string msg_reply = "";
             MsgToCase.TrimStart();
             MsgToCase.TrimEnd();
-            switch (msg.ToLower())
+
+            switch (dictionaryCollections.DS_1(msg.ToLower()))
             {
-                case "1":
-                    msg_reply = "Меню просмотра записей на стирку. Выберите варианты или введите конкретную дату в формате <ММ.ДД.ГГГГ>:\n1. За эту неделю\n2. За следующую неделю\n3. Сегодня\n4. За этот месяц\n5. За прошлую неделю\n6. За прошлый месяц\nВ любой момент можно написать \"Отмена\" для возвращения в главное меню";
-                    SendMessage(UserID, msg_reply);
-                    return 11;
-                case "1.":
-                    goto case "1";
-                case "просмотреть свои записи на стирку":
-                    goto case "1";
-                case "просмотреть записи":
-                    goto case "1";
-                case "посмотреть записи":
-                    goto case "1";
-                case "записи":
-                    goto case "1";
-                case "мои записи":
-                    goto case "1";
-                case "записи на стирку":
-                    goto case "1";
-                case "2":
-                    msg_reply = "Меню записи на стирку.\n Выберите варианты или введите конкретную дату в формате <ММ.ДД.ГГГГ>, чтобы посмотреть свободные места и записаться:\n1. На эту неделю\n2. На следующую неделю\n3. Сегодня\n4. Через неделю\n5. Через две недели\nВ любой момент можно написать \"Отмена\" для возвращения в главное меню";
-                    SendMessage(UserID, msg_reply);
-                    return 12;
-                case "записаться на стирку":
-                    goto case "2";
-                case "записаться":
-                    goto case "2";
-                case "запись на стирку":
-                    goto case "2";
-                case "2.":
-                    goto case "2";
-                case "отмена":
+                case 0:
                     msg_reply = "Возврат в главное меню...";
                     SendMessage(UserID, msg_reply);
                     return DS_0(UserID);
+                case 1:
+                    msg_reply = "Меню просмотра записей на стирку. Выберите варианты или введите конкретную дату в формате <ММ.ДД.ГГГГ>:\n1. За эту неделю\n2. За следующую неделю\n3. Сегодня\n4. За этот месяц\n5. За прошлую неделю\n6. За прошлый месяц\nВ любой момент можно написать \"Отмена\" для возвращения в главное меню";
+                    SendMessage(UserID, msg_reply);
+                    return 11;
+                case 2:
+                    msg_reply = "Меню записи на стирку.\n Выберите варианты или введите конкретную дату в формате <ММ.ДД.ГГГГ>, чтобы посмотреть свободные места и записаться:\n1. На эту неделю\n2. На следующую неделю\n3. Сегодня\n4. Через неделю\n5. Через две недели\nВ любой момент можно написать \"Отмена\" для возвращения в главное меню";
+                    SendMessage(UserID, msg_reply);
+                    return 12;
                 default:
                     msg_reply = "Нет такого пункта!";
                     SendMessage(UserID, msg_reply);
                     return 1;
-                
             }
         }
         public Int16 DS_1_1(long UserID, string msg, ConnectToDB connect)
@@ -241,6 +219,10 @@ namespace WashmachineServer.Controllers
             string msg_reply = "";
             MsgToCase.TrimStart();
             MsgToCase.TrimEnd();
+
+
+
+
             switch (msg.ToLower())
             {
                 //За эту неделю
@@ -381,21 +363,32 @@ namespace WashmachineServer.Controllers
                     SendMessage(UserID, msg_reply);
                     return DS_0(UserID);
                 default:
-                    Regex MMDDYYYY = new Regex("^[0-9]{2}[.][0-9]{2}[.][0-9]{4}");
-                    if (MMDDYYYY.IsMatch(msg))
+                    
+                    if (dictionaryCollections.IsInDateFormat(msg))
                     {
-                        if (connect.IsUserRecordsExist(UserID, msg))
+                        string DateMsg = dictionaryCollections.ConverToPostgreDate(msg);
+                        if (DateMsg!=null)
                         {
-                            msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
-                            SendMessage(UserID, msg_reply);
-                            return DS_0(UserID);
+                            if (connect.IsUserRecordsExist(UserID, msg))
+                            {
+                                msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
+                                SendMessage(UserID, msg_reply);
+                                return DS_0(UserID);
+                            }
+                            else
+                            {
+                                msg_reply = "У вас нет записей за " + msg + ". Повторно выберите интервал или напишите \"Отмена\" для возврата в главное меню:";
+                                SendMessage(UserID, msg_reply);
+                                return 11;
+                            }
                         }
                         else
                         {
-                            msg_reply = "У вас нет записей за "+msg+". Повторно выберите интервал или напишите \"Отмена\" для возврата в главное меню:";
+                            msg_reply = "Нет такого временного промежутка либо он введён неверно. Повторно выберите интервал или напишите \"Отмена\" для возврата в главное меню: ";
                             SendMessage(UserID, msg_reply);
                             return 11;
                         }
+                        
                     }
                     else
                     {

@@ -15,7 +15,9 @@ namespace WashmachineServer.MessageHandling
     {
         //Строка подключения
         private string ConnectionString;
-        //private const string ConnectionString = "";
+        //Опционально для подключения через запись в файле конфигурации
+        //private const string ConnectionString = _configuration["Config:ConnectionString"];
+
         public ConnectToDB()
         {
             //Получаю строку из переменных окружения
@@ -156,7 +158,7 @@ namespace WashmachineServer.MessageHandling
                 NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
                 DB_Connection.Open();
                 DB_Command.Parameters.AddWithValue("UserID", UserID);
-                DB_Command.Parameters.AddWithValue("UserDate", interval);
+                DB_Command.Parameters.AddWithValue("UserDate", "'"+interval+"'");
                 DB_Command.Prepare();
                 bool res = (bool)DB_Command.ExecuteScalar();
                 DB_Connection.CloseAsync();
