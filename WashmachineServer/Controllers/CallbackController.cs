@@ -141,13 +141,13 @@ namespace WashmachineServer.Controllers
 
             return Ok("ok");
         }
-        private async Task<string> UploadFile(string serverUrl, string file, string fileExtension, bool urlOrFilepath)
+        private async Task<string> UploadFileFromUrl(string serverUrl, string file, string fileExtension)
         {
-            byte[] data;
+            
             // Получение массива байтов из файла
             //if (urlOrFilepath)
             //{
-                data = GetBytesFromURL(file);
+            byte[] data = GetBytesFromURL(file);
             //}
             //else
             //{
@@ -200,7 +200,7 @@ namespace WashmachineServer.Controllers
         public async void SendMessage(long UserID, string msg, string urlway, string filetype)
         {
             var uploadServer = _vkApi.Photo.GetMessagesUploadServer(UserID);
-            var response = await UploadFile(uploadServer.UploadUrl, urlway, filetype, true);
+            var response = await UploadFileFromUrl(uploadServer.UploadUrl, urlway, filetype);
             // Сохранить загруженный файл
             var attachment = _vkApi.Photo.SaveMessagesPhoto(response);
 
