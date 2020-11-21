@@ -135,15 +135,14 @@ namespace WashmachineServer.Controllers
         private async Task<string> UploadFileFromUrl(string serverUrl, string file, string fileExtension)
         {
             
-            // Получение массива байтов из файла
-            //if (urlOrFilepath)
-            //{
+         
             var data = GetBytesFromURL(file);
-            //}
-            //else
-            //{
-            //    data = GetBytesFromFile(file);
-            //}
+            if (data == null)
+            {
+                ConnectToDB cdb = new ConnectToDB();
+                cdb.ErrorLogWriting("Error read img data from URL: " + file,1);
+                throw new Exception("Error read img data from URL: " + file);
+            }
 
             // Создание запроса на загрузку файла на сервер
             using (var client = new HttpClient())
