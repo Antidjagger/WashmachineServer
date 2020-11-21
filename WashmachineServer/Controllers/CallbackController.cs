@@ -37,6 +37,7 @@ namespace WashmachineServer.Controllers
         {
             _vkApi = vkApi;
             _configuration = configuration;
+            dictionaryCollections = new DictionaryCollections();
         }
 
 
