@@ -165,7 +165,7 @@ namespace WashmachineServer.Controllers
         }
         //private byte[] GetBytesFromFile(string filePath)
         //{
-        //    return File.ReadAllBytes(filePath);
+        //    return File.ReadAllBytes(filePath); 
         //}
 
         /// <summary>
@@ -205,7 +205,7 @@ namespace WashmachineServer.Controllers
             }
             catch 
             {
-
+                
                 throw new Exception("Не удалось отправить фотографию");
             }
             
@@ -233,27 +233,38 @@ namespace WashmachineServer.Controllers
             string msg_reply = "";
             MsgToCase.TrimStart();
             MsgToCase.TrimEnd();
-
-            switch (dictionaryCollections.DS_1(MsgToCase))
+            try
             {
-                case 0:
-                    msg_reply = "Возврат в главное меню...";
-                    SendMessage(UserID, msg_reply);
-                    return DS_0(UserID);
-                case 1:
-                    msg_reply = "Меню просмотра записей на стирку. Выберите варианты или введите конкретную дату в формате <ММ.ДД.ГГГГ>:\n1. За эту неделю\n2. За следующую неделю\n3. Сегодня\n4. За этот месяц\n5. За прошлую неделю\n6. За прошлый месяц\nВ любой момент можно написать \"Отмена\" для возвращения в главное меню";
-                    //SendMessage(UserID, msg_reply);
-                    SendMessage(UserID, msg_reply, "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
-                    return 11;
-                case 2:
-                    msg_reply = "Меню записи на стирку.\n Выберите варианты или введите конкретную дату в формате <ММ.ДД.ГГГГ>, чтобы посмотреть свободные места и записаться:\n1. На эту неделю\n2. На следующую неделю\n3. Сегодня\n4. Через неделю\n5. Через две недели\nВ любой момент можно написать \"Отмена\" для возвращения в главное меню";
-                    SendMessage(UserID, msg_reply);
-                    return 12;
-                default:
-                    msg_reply = "Нет такого пункта!";
-                    SendMessage(UserID, msg_reply);
-                    return 1;
+                switch (dictionaryCollections.DS_1(MsgToCase))
+                {
+                    case 0:
+                        msg_reply = "Возврат в главное меню...";
+                        SendMessage(UserID, msg_reply);
+                        return DS_0(UserID);
+                    case 1:
+                        msg_reply = "Меню просмотра записей на стирку. Выберите варианты или введите конкретную дату в формате <ММ.ДД.ГГГГ>:\n1. За эту неделю\n2. За следующую неделю\n3. Сегодня\n4. За этот месяц\n5. За прошлую неделю\n6. За прошлый месяц\nВ любой момент можно написать \"Отмена\" для возвращения в главное меню";
+                        //SendMessage(UserID, msg_reply);
+                        SendMessage(UserID, msg_reply, "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
+                        return 11;
+                    case 2:
+                        msg_reply = "Меню записи на стирку.\n Выберите варианты или введите конкретную дату в формате <ММ.ДД.ГГГГ>, чтобы посмотреть свободные места и записаться:\n1. На эту неделю\n2. На следующую неделю\n3. Сегодня\n4. Через неделю\n5. Через две недели\nВ любой момент можно написать \"Отмена\" для возвращения в главное меню";
+                        SendMessage(UserID, msg_reply);
+                        return 12;
+                    default:
+                        msg_reply = "Нет такого пункта!";
+                        SendMessage(UserID, msg_reply);
+                        return 1;
+                }
             }
+            catch (Exception ex)
+            {
+
+                SendMessage(UserID, "Произошла ошибка! Обратитесь к администратору с данным текстом ошибки: " + ex.Message);
+                msg_reply = "Возврат в главное меню...";
+                SendMessage(UserID, msg_reply);
+                return DS_0(UserID);
+            }
+            
         }
         public Int16 DS_1_1(long UserID, string msg, ConnectToDB connect)
         {
