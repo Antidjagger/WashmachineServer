@@ -57,7 +57,7 @@ namespace WashmachineServer.Controllers
                     {
                         // Десериализация
                         var msg = Message.FromJson(new VkResponse(updates.Object));
-                        ConnectToDB connectToDB = new ConnectToDB();
+                        ConnectToDB connectToDB = new ConnectToDB(_configuration);
                         /// <summary>
                         /// Начинаем работу с пользователем с очередной проверки, есть ли он в списке
                         /// Временно, я буду просто рассказывать ему, что он есть в списке либо отсутствует в нём
@@ -98,9 +98,6 @@ namespace WashmachineServer.Controllers
                                             connectToDB.SetUserDialogStage(UserID, DS_0(UserID));
                                             break;
                                     }
-
-
-
                                 }
                                 else
                                 {
@@ -133,12 +130,12 @@ namespace WashmachineServer.Controllers
             }
             return Ok("ok");
         }
-        private async Task<string> UploadFileFromUrl(string serverUrl, string file, string fileExtension)
+        public async Task<string> UploadFileFromUrl(string serverUrl, string file, string fileExtension)
         {
             var data = GetBytesFromURL(file);
             if (data == null)
             {
-                ConnectToDB cdb = new ConnectToDB();
+                ConnectToDB cdb = new ConnectToDB(_configuration);
                 cdb.ErrorLogWriting("Error read img data from URL: " + file,1);
                 //throw new Exception("Error read img data from URL: " + file);
             }
@@ -181,18 +178,20 @@ namespace WashmachineServer.Controllers
                 Message = msg
             });
         }
-       
-
-
-
         //Отправка сообщения и фото
         public async void SendMessage(long UserID, string msg, string urlway, string filetype)
         {
-            try
+            
+            var uploadServer = _vkApi.Photo.GetMessagesUploadServer(UserID);
+            //var response = await UploadFileFromUrl(uploadServer.UploadUrl, urlway, filetype);
+            var response = await UploadFileFromUrl(uploadServer.UploadUrl, "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
+            if (response == null)
             {
-                var uploadServer = _vkApi.Photo.GetMessagesUploadServer(UserID);
-                //var response = await UploadFileFromUrl(uploadServer.UploadUrl, urlway, filetype);
-                var response = await UploadFileFromUrl(uploadServer.UploadUrl, "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
+                SendMessage(UserID, "Не удалось отправить фотографию");
+                throw new Exception("Не удалось отправить фотографию");
+            }
+            else
+            {
                 // Сохранить загруженный файл
                 var attachment = _vkApi.Photo.SaveMessagesPhoto(response);
                 _vkApi.Messages.Send(new MessagesSendParams
@@ -202,11 +201,6 @@ namespace WashmachineServer.Controllers
                     Message = msg,
                     Attachments = attachment
                 });
-            }
-            catch 
-            {
-                
-                throw new Exception("Не удалось отправить фотографию");
             }
         }
 
@@ -257,7 +251,7 @@ namespace WashmachineServer.Controllers
             {
 
                 SendMessage(UserID, "Произошла ошибка! Обратитесь к администратору с данным текстом ошибки: " + ex.Message);
-                ConnectToDB cdb = new ConnectToDB();
+                ConnectToDB cdb = new ConnectToDB(_configuration);
                 switch (ex.Message)
                 {
                     

@@ -18,11 +18,21 @@ namespace WashmachineServer.MessageHandling
         //Опционально для подключения через запись в файле конфигурации
         //private const string ConnectionString = _configuration["Config:ConnectionString"];
 
-        public ConnectToDB()
+        public ConnectToDB(Microsoft.Extensions.Configuration.IConfiguration _configuration)
         {
-            //Получаю строку из переменных окружения
-
-            ConnectionString = Environment.GetEnvironmentVariable("EnvironmentCS");
+            switch (_configuration["ConnectionToDatabase:TakeCSFromConfig"])
+            {
+                case "true":
+                    ConnectionString = _configuration["ConnectionToDatabase:ConnectionString"];
+                    break;
+                case "false":
+                    ConnectionString = Environment.GetEnvironmentVariable(_configuration["ConnectionToDatabase:EnvironmentCS"]);
+                    break;
+                default:
+                    //Здесь нужно реализовать запись в локальный лог-файл
+                    ConnectionString = null;
+                    break;
+            }
         }
         public string GetConnectionString()
         {
