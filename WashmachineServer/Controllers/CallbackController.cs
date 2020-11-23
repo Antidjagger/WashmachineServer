@@ -149,6 +149,7 @@ namespace WashmachineServer.Controllers
                 requestContent.Add(content, "file", $"file.{fileExtension}");
 
                 var response = client.PostAsync(serverUrl, requestContent).Result;
+               
                 return System.Text.Encoding.Default.GetString(await response.Content.ReadAsByteArrayAsync());
             }
         }
@@ -235,7 +236,7 @@ namespace WashmachineServer.Controllers
                     case 1:
                         msg_reply = "Меню просмотра записей на стирку. Выберите варианты или введите конкретную дату в формате <ММ.ДД.ГГГГ>:\n1. За эту неделю\n2. За следующую неделю\n3. Сегодня\n4. За этот месяц\n5. За прошлую неделю\n6. За прошлый месяц\nВ любой момент можно написать \"Отмена\" для возвращения в главное меню";
                         SendMessage(UserID, msg_reply);
-                        //SendMessage(UserID, msg_reply, "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
+                        SendMessage(UserID, "1", "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
                         return 11;
                     case 2:
                         msg_reply = "Меню записи на стирку.\n Выберите варианты или введите конкретную дату в формате <ММ.ДД.ГГГГ>, чтобы посмотреть свободные места и записаться:\n1. На эту неделю\n2. На следующую неделю\n3. Сегодня\n4. Через неделю\n5. Через две недели\nВ любой момент можно написать \"Отмена\" для возвращения в главное меню";
