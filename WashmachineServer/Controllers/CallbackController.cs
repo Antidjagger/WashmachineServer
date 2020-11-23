@@ -140,7 +140,7 @@ namespace WashmachineServer.Controllers
             {
                 ConnectToDB cdb = new ConnectToDB();
                 cdb.ErrorLogWriting("Error read img data from URL: " + file,1);
-                throw new Exception("Error read img data from URL: " + file);
+                //throw new Exception("Error read img data from URL: " + file);
             }
 
             // Создание запроса на загрузку файла на сервер
