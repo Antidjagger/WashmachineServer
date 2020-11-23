@@ -31,13 +31,13 @@ namespace WashmachineServer.Controllers
         /// </summary>
         private readonly IConfiguration _configuration;
         private readonly IVkApi _vkApi;
-        private DictionaryCollections dictionaryCollections;
+        private readonly DictionaryCollections dictionaryCollections;
         //Конструктор
         public CallbackController(IVkApi vkApi, IConfiguration configuration)
         {
             _vkApi = vkApi;
             _configuration = configuration;
-            dictionaryCollections = new DictionaryCollections();
+            dictionaryCollections = new DictionaryCollections(0);
         }
 
 
@@ -135,8 +135,6 @@ namespace WashmachineServer.Controllers
         }
         private async Task<string> UploadFileFromUrl(string serverUrl, string file, string fileExtension)
         {
-            
-         
             var data = GetBytesFromURL(file);
             if (data == null)
             {
@@ -190,17 +188,29 @@ namespace WashmachineServer.Controllers
         //Отправка сообщения и фото
         public async void SendMessage(long UserID, string msg, string urlway, string filetype)
         {
-            var uploadServer = _vkApi.Photo.GetMessagesUploadServer(UserID);
-            var response = await UploadFileFromUrl(uploadServer.UploadUrl, urlway, filetype);
-            // Сохранить загруженный файл
-            var attachment = _vkApi.Photo.SaveMessagesPhoto(response);
-            _vkApi.Messages.Send(new MessagesSendParams
+            try
             {
-                RandomId = new DateTime().Millisecond,
-                PeerId = UserID,
-                Message = msg,
-                Attachments = attachment
-            });
+                var uploadServer = _vkApi.Photo.GetMessagesUploadServer(UserID);
+                //var response = await UploadFileFromUrl(uploadServer.UploadUrl, urlway, filetype);
+                var response = await UploadFileFromUrl(uploadServer.UploadUrl, "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
+                // Сохранить загруженный файл
+                var attachment = _vkApi.Photo.SaveMessagesPhoto(response);
+                _vkApi.Messages.Send(new MessagesSendParams
+                {
+                    RandomId = new DateTime().Millisecond,
+                    PeerId = UserID,
+                    Message = msg,
+                    Attachments = attachment
+                });
+            }
+            catch 
+            {
+
+                throw new Exception("Не удалось отправить фотографию");
+            }
+            
+            
+            
         }
 
         private void AntiMat()
@@ -211,7 +221,7 @@ namespace WashmachineServer.Controllers
         public Int16 DS_0(long UserID)
         {
             string msg_reply = "Главное меню. Выберите варианты:\n 1. Просмотреть свои записи на стирку \n 2. Записаться на стирку\n В любой момент можно написать \"Отмена\" для возвращения в главное меню";
-            SendMessage(UserID, msg_reply, "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
+            SendMessage(UserID, msg_reply);
             return 1;
         }
         public Int16 DS_1(long UserID, string msg)
@@ -232,7 +242,8 @@ namespace WashmachineServer.Controllers
                     return DS_0(UserID);
                 case 1:
                     msg_reply = "Меню просмотра записей на стирку. Выберите варианты или введите конкретную дату в формате <ММ.ДД.ГГГГ>:\n1. За эту неделю\n2. За следующую неделю\n3. Сегодня\n4. За этот месяц\n5. За прошлую неделю\n6. За прошлый месяц\nВ любой момент можно написать \"Отмена\" для возвращения в главное меню";
-                    SendMessage(UserID, msg_reply);
+                    //SendMessage(UserID, msg_reply);
+                    SendMessage(UserID, msg_reply, "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
                     return 11;
                 case 2:
                     msg_reply = "Меню записи на стирку.\n Выберите варианты или введите конкретную дату в формате <ММ.ДД.ГГГГ>, чтобы посмотреть свободные места и записаться:\n1. На эту неделю\n2. На следующую неделю\n3. Сегодня\n4. Через неделю\n5. Через две недели\nВ любой момент можно написать \"Отмена\" для возвращения в главное меню";
