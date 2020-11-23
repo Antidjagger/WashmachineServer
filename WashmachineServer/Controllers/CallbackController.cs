@@ -208,9 +208,6 @@ namespace WashmachineServer.Controllers
                 
                 throw new Exception("Не удалось отправить фотографию");
             }
-            
-            
-            
         }
 
         private void AntiMat()
@@ -260,6 +257,18 @@ namespace WashmachineServer.Controllers
             {
 
                 SendMessage(UserID, "Произошла ошибка! Обратитесь к администратору с данным текстом ошибки: " + ex.Message);
+                ConnectToDB cdb = new ConnectToDB();
+                switch (ex.Message)
+                {
+                    
+                    case "Не удалось отправить фотографию":
+                        cdb.ErrorLogWriting("Message with photo send error", 3);
+
+                        break;
+                    default:
+                        cdb.ErrorLogWriting("Message send error", 4);
+                        break;
+                }
                 msg_reply = "Возврат в главное меню...";
                 SendMessage(UserID, msg_reply);
                 return DS_0(UserID);
