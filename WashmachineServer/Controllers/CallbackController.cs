@@ -44,6 +44,8 @@ namespace WashmachineServer.Controllers
         [HttpPost]
         public IActionResult Callback([FromBody] Updates updates)
         {
+            ConnectToDB connectToDB = new ConnectToDB(_configuration);
+            connectToDB.MsgAPILogWriting(updates.Type);
             // Тип события
             switch (updates.Type)
             {
@@ -57,7 +59,7 @@ namespace WashmachineServer.Controllers
                     {
                         // Десериализация
                         var msg = Message.FromJson(new VkResponse(updates.Object));
-                        ConnectToDB connectToDB = new ConnectToDB(_configuration);
+                        
                         /// <summary>
                         /// Начинаем работу с пользователем с очередной проверки, есть ли он в списке
                         /// Временно, я буду просто рассказывать ему, что он есть в списке либо отсутствует в нём

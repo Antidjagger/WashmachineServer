@@ -67,6 +67,19 @@ namespace WashmachineServer.MessageHandling
             DB_Command.ExecuteScalar();
             DB_Connection.CloseAsync();
         }
+        public void MsgAPILogWriting(string text)
+        {
+            string DB_Query = "INSERT INTO \"ApiMessageLog\"(\"LogText\") VALUES (@LogText)";
+
+            NpgsqlConnection DB_Connection = new NpgsqlConnection(ConnectionString);
+            DB_Connection.Open();
+            NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
+            DB_Command.Parameters.AddWithValue("LogText", text);
+            DB_Command.Prepare();
+
+            DB_Command.ExecuteScalar();
+            DB_Connection.CloseAsync();
+        }
         /// <summary>
         /// Проверка, есть ли пользователь в списках БД
         /// </summary>
