@@ -235,6 +235,68 @@ namespace WashmachineServer.MessageHandling
             DB_Connection.CloseAsync();
             return res;
         }
+
+        public string [] GetUserRecords(long UserID, Int16 interval)
+        {
+            
+            string DB_Query = "";
+            string DB_Query2 = "";
+            switch (interval)
+            {
+                /// <summary>
+                /// Нижепреведённые запросы составлены с учётом того, что время сервера - GMT+0, а время клиентов - московское (GMT+3)
+                /// В дальнейшем в конфигурации будут добавлены соответствующие настройки
+                /// </summary>
+                case 1:
+                    DB_Query = "SELECT COUNT(*) FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '1 week' + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
+                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '1 week' + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
+                    break;
+                case 2:
+                    DB_Query = "SELECT COUNT(*) FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '1 week' + INTERVAL '3 hours' ) AND (CURRENT_DATE + INTERVAL '2 week'+ INTERVAL '3 hours')) AND (\"_UserId\" =@UserID)";
+                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '1 week' + INTERVAL '3 hours' ) AND (CURRENT_DATE + INTERVAL '2 week'+ INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
+                    break;
+                case 3:
+                    DB_Query = "SELECT COUNT(*) FROM  \"Records\" WHERE (\"RecordDate\" = CURRENT_DATE) AND (\"_UserId\" = @UserID))";//!!!
+                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" = CURRENT_DATE) AND (\"_UserId\" = @UserID))";
+                    break;
+                case 4:
+                    DB_Query = "SELECT COUNT(*) 1 FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '1 month' + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
+                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '1 month' + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
+                    break;
+                case 5:
+                    DB_Query = "SELECT COUNT(*) 1 FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE - INTERVAL '1 week' + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
+                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE - INTERVAL '1 week' + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
+                    break;
+                case 6:
+                    DB_Query = "SELECT COUNT(*) 1 FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE - INTERVAL '1 month' + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
+                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE - INTERVAL '1 month' + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
+                    break;
+                default:
+                    return null;
+            }
+            NpgsqlConnection DB_Connection = new NpgsqlConnection(ConnectionString);
+            NpgsqlCommand DB_CommandCount = new NpgsqlCommand(DB_Query, DB_Connection);
+            NpgsqlCommand DB_CommandReader = new NpgsqlCommand(DB_Query2, DB_Connection);
+            DB_Connection.Open();
+            DB_CommandCount.Parameters.AddWithValue("UserID", UserID);
+            DB_CommandCount.Prepare();
+            Int16 count = (short)DB_CommandReader.ExecuteScalar();
+            string[] temp = new string[count];
+            DB_CommandReader.Parameters.AddWithValue("UserID", UserID);
+            DB_CommandReader.Prepare();
+            NpgsqlDataReader reader;
+            DbDataView dataView = new DbDataView();
+            reader = DB_CommandReader.ExecuteReader();
+            //Нужно добавить ловлю исключений на случай, если вдруг кто-то умудрится в момент получения данных вклинить-таки свой запрос на отправку данных
+            while (reader.Read())
+            {
+                int i = 0;
+                temp[i] = reader.GetString(0) + " в " + dataView.dbTimeIntervalView(reader.GetInt16(1));
+                DB_Connection.CloseAsync();
+                i++;
+            }
+            return temp;
+        }
         //public bool GetUserRecords(long UserID, Int16 interval)
         //{
 

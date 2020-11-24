@@ -24,7 +24,8 @@ namespace WashmachineServer.MessageHandling
         private int IsKey;
         public DictionaryCollections(int isKey)
         { IsKey = isKey; }
-        //Проверяет, соответствует ли строка условному формату даты
+        //Проверяет, соответствует ли строка условному формату даты 
+        //Возможно, к слиянию с ConvertToPostgreDate
         public bool IsInDateFormat(string Date)
         {
             Regex MMDDYYYY = new Regex(@"^[0-9]{2}[.][0-9]{2}[.][0-9]{4}");

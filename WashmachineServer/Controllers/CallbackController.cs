@@ -141,7 +141,6 @@ namespace WashmachineServer.Controllers
             {
                 ConnectToDB cdb = new ConnectToDB(_configuration);
                 cdb.ErrorLogWriting("Error read img data from URL: " + file,1);
-                //throw new Exception("Error read img data from URL: " + file);
             }
 
             // Создание запроса на загрузку файла на сервер
@@ -184,15 +183,11 @@ namespace WashmachineServer.Controllers
             });
         }
         //Отправка сообщения и фото
-        public  void SendMessage(long UserID, string msg, string urlway, string filetype)
+        public async void SendMessage(long UserID, string msg, string urlway, string filetype)
         {
-            
+
             var uploadServer = _vkApi.Photo.GetMessagesUploadServer(UserID);
-            connectToDB.MainLogWriting("Попытка отправки сообщения с фото...");
-            connectToDB.MsgAPILogWriting("Upload server url = " + uploadServer.UploadUrl);
-            //var response = await UploadFileFromUrl(uploadServer.UploadUrl, urlway, filetype);
-            var response = UploadFileFromUrl(uploadServer.UploadUrl, "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
-            connectToDB.MsgAPILogWriting("Upload server url = " + response.Result);
+            var response = await UploadFileFromUrl(uploadServer.UploadUrl, urlway, filetype);
             if (response == null)
             {
                 SendMessage(UserID, "Не удалось отправить фотографию");
@@ -202,7 +197,7 @@ namespace WashmachineServer.Controllers
             else
             {
                 // Сохранить загруженный файл
-                var attachment = _vkApi.Photo.SaveMessagesPhoto(response.Result);
+                var attachment = _vkApi.Photo.SaveMessagesPhoto(response);
                 _vkApi.Messages.Send(new MessagesSendParams
                 {
                     RandomId = new DateTime().Millisecond,
@@ -244,7 +239,6 @@ namespace WashmachineServer.Controllers
                     case 1:
                         msg_reply = "Меню просмотра записей на стирку. Выберите варианты или введите конкретную дату в формате <ММ.ДД.ГГГГ>:\n1. За эту неделю\n2. За следующую неделю\n3. Сегодня\n4. За этот месяц\n5. За прошлую неделю\n6. За прошлый месяц\nВ любой момент можно написать \"Отмена\" для возвращения в главное меню";
                         SendMessage(UserID, msg_reply);
-                        SendMessage(UserID, "1", "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
                         return 11;
                     case 2:
                         msg_reply = "Меню записи на стирку.\n Выберите варианты или введите конкретную дату в формате <ММ.ДД.ГГГГ>, чтобы посмотреть свободные места и записаться:\n1. На эту неделю\n2. На следующую неделю\n3. Сегодня\n4. Через неделю\n5. Через две недели\nВ любой момент можно написать \"Отмена\" для возвращения в главное меню";
@@ -294,8 +288,18 @@ namespace WashmachineServer.Controllers
                 //За сегодня
                     if (connectToDB.IsUserRecordsExist(UserID, 3))
                     {
-                        msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
+                        msg_reply = "У вас есть записи в этом интервале: ";
                         SendMessage(UserID, msg_reply);
+                        string [] temp = connectToDB.GetUserRecords(UserID, 3);
+                        msg_reply = "";
+                        foreach (string record in temp)
+                        {
+                            msg_reply += record + "\n";
+                        }
+                        SendMessage(UserID, msg_reply);
+                        msg_reply = "Возврат в главное меню...";
+                        SendMessage(UserID, msg_reply);
+                        //SendMessage(UserID, "Здесь будет фото таблицы с записями", "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
                         return DS_0(UserID);
                     }
                     else
@@ -307,8 +311,18 @@ namespace WashmachineServer.Controllers
                 case 2:
                     if (connectToDB.IsUserRecordsExist(UserID, 1))
                     {
-                        msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
+                        msg_reply = "У вас есть записи в этом интервале: ";
                         SendMessage(UserID, msg_reply);
+                        string[] temp = connectToDB.GetUserRecords(UserID, 1);
+                        msg_reply = "";
+                        foreach (string record in temp)
+                        {
+                            msg_reply += record + "\n";
+                        }
+                        SendMessage(UserID, msg_reply);
+                        msg_reply = "Возврат в главное меню...";
+                        SendMessage(UserID, msg_reply);
+                        //SendMessage(UserID, "Здесь будет фото таблицы с записями", "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
                         return DS_0(UserID);
                     }
                     else
@@ -320,8 +334,18 @@ namespace WashmachineServer.Controllers
                 case 3:
                     if (connectToDB.IsUserRecordsExist(UserID, 2))
                     {
-                        msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
+                        msg_reply = "У вас есть записи в этом интервале: ";
                         SendMessage(UserID, msg_reply);
+                        string[] temp = connectToDB.GetUserRecords(UserID, 2);
+                        msg_reply = "";
+                        foreach (string record in temp)
+                        {
+                            msg_reply += record + "\n";
+                        }
+                        SendMessage(UserID, msg_reply);
+                        msg_reply = "Возврат в главное меню...";
+                        SendMessage(UserID, msg_reply);
+                        //SendMessage(UserID, "Здесь будет фото таблицы с записями", "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
                         return DS_0(UserID);
                     }
                     else
@@ -333,8 +357,18 @@ namespace WashmachineServer.Controllers
                 case 4:
                     if (connectToDB.IsUserRecordsExist(UserID, 4))
                     {
-                        msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
+                        msg_reply = "У вас есть записи в этом интервале: ";
                         SendMessage(UserID, msg_reply);
+                        string[] temp = connectToDB.GetUserRecords(UserID, 4);
+                        msg_reply = "";
+                        foreach (string record in temp)
+                        {
+                            msg_reply += record + "\n";
+                        }
+                        SendMessage(UserID, msg_reply);
+                        msg_reply = "Возврат в главное меню...";
+                        SendMessage(UserID, msg_reply);
+                        //SendMessage(UserID, "Здесь будет фото таблицы с записями", "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
                         return DS_0(UserID);
                     }
                     else
@@ -346,8 +380,18 @@ namespace WashmachineServer.Controllers
                 case 5:
                     if (connectToDB.IsUserRecordsExist(UserID, 5))
                     {
-                        msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
+                        msg_reply = "У вас есть записи в этом интервале: ";
                         SendMessage(UserID, msg_reply);
+                        string[] temp = connectToDB.GetUserRecords(UserID, 5);
+                        msg_reply = "";
+                        foreach (string record in temp)
+                        {
+                            msg_reply += record + "\n";
+                        }
+                        SendMessage(UserID, msg_reply);
+                        msg_reply = "Возврат в главное меню...";
+                        SendMessage(UserID, msg_reply);
+                        //SendMessage(UserID, "Здесь будет фото таблицы с записями", "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
                         return DS_0(UserID);
                     }
                     else
@@ -359,8 +403,18 @@ namespace WashmachineServer.Controllers
                 case 6:
                     if (connectToDB.IsUserRecordsExist(UserID, 6))
                     {
-                        msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
+                        msg_reply = "У вас есть записи в этом интервале: ";
                         SendMessage(UserID, msg_reply);
+                        string[] temp = connectToDB.GetUserRecords(UserID, 6);
+                        msg_reply = "";
+                        foreach (string record in temp)
+                        {
+                            msg_reply += record + "\n";
+                        }
+                        SendMessage(UserID, msg_reply);
+                        msg_reply = "Возврат в главное меню...";
+                        SendMessage(UserID, msg_reply);
+                        SendMessage(UserID, "Здесь будет фото таблицы с записями", "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
                         return DS_0(UserID);
                     }
                     else
@@ -379,6 +433,7 @@ namespace WashmachineServer.Controllers
                             {
                                 msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
                                 SendMessage(UserID, msg_reply);
+                                SendMessage(UserID, "Здесь будет фото таблицы с записями", "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
                                 return DS_0(UserID);
                             }
                             else
