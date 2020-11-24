@@ -188,6 +188,7 @@ namespace WashmachineServer.Controllers
         {
             
             var uploadServer = _vkApi.Photo.GetMessagesUploadServer(UserID);
+            connectToDB.MainLogWriting("Попытка отправки сообщения с фото...");
             connectToDB.MsgAPILogWriting("Upload server url = " + uploadServer.UploadUrl);
             //var response = await UploadFileFromUrl(uploadServer.UploadUrl, urlway, filetype);
             var response = await UploadFileFromUrl(uploadServer.UploadUrl, "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
