@@ -207,22 +207,22 @@ namespace WashmachineServer.MessageHandling
                 /// В дальнейшем в конфигурации будут добавлены соответствующие настройки
                 /// </summary>
                 case 3:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '1 week' + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID))";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '3 hours')::date AND (now() + INTERVAL '1 week' + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
                     break;
                 case 2:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '1 week' + INTERVAL '3 hours' ) AND (CURRENT_DATE + INTERVAL '2 week'+ INTERVAL '3 hours')) AND (\"_UserId\" =@UserID))";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '1 week' + INTERVAL '3 hours')::date AND (now() + INTERVAL '2 week'+ INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
                     break;
                 case 1:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM  \"Records\" WHERE (\"RecordDate\" = CURRENT_DATE + INTERVAL '3 hours') AND (\"_UserId\" = @UserID))";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" = (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
                     break;
                 case 4:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '1 month' + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID))";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '3 hours')::date AND (now() + INTERVAL '1 month' + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
                     break;
                 case 5:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE - INTERVAL '1 week' + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID))";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 week' + INTERVAL '3 hours')::date AND (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
                     break;
                 case 6:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM  \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE - INTERVAL '1 month' + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID))";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 month' + INTERVAL '3 hours')::date AND (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
                     break;
                 default:
                     return false;
@@ -248,28 +248,28 @@ namespace WashmachineServer.MessageHandling
                 /// В дальнейшем в конфигурации будут добавлены соответствующие настройки
                 /// </summary>
                 case 3:
-                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '1 week' + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
-                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '1 week' + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '3 hours')::date AND (now() + INTERVAL '1 week' + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
+                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '3 hours')::date AND (now() + INTERVAL '1 week' + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
                     break;
                 case 2:
-                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '1 week' + INTERVAL '3 hours' ) AND (CURRENT_DATE + INTERVAL '2 week'+ INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
-                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '1 week' + INTERVAL '3 hours' ) AND (CURRENT_DATE + INTERVAL '2 week'+ INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '1 week' + INTERVAL '3 hours')::date AND (now() + INTERVAL '2 week'+ INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
+                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '1 week' + INTERVAL '3 hours')::date AND (now() + INTERVAL '2 week'+ INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
                     break;
                 case 1:
-                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" = CURRENT_DATE + INTERVAL '3 hours') AND (\"_UserId\" = @UserID)";//!!!
-                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" = CURRENT_DATE + INTERVAL '3 hours') AND (\"_UserId\" = @UserID)";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" = (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";//!!!
+                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" = (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
                     break;
                 case 4:
-                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '1 month' + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
-                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '1 month' + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '3 hours')::date AND (now() + INTERVAL '1 month' + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
+                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '3 hours')::date AND (now() + INTERVAL '1 month' + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
                     break;
                 case 5:
-                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE - INTERVAL '1 week' + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
-                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE - INTERVAL '1 week' + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 week' + INTERVAL '3 hours')::date AND (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
+                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 week' + INTERVAL '3 hours')::date AND (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
                     break;
                 case 6:
-                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE - INTERVAL '1 month' + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
-                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (CURRENT_DATE - INTERVAL '1 month' + INTERVAL '3 hours') AND (CURRENT_DATE + INTERVAL '3 hours')) AND (\"_UserId\" = @UserID)";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 month' + INTERVAL '3 hours')::date AND (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
+                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 month' + INTERVAL '3 hours')::date AND (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
                     break;
                 default:
                     return null;
