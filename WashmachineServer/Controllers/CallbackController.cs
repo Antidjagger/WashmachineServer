@@ -278,7 +278,8 @@ namespace WashmachineServer.Controllers
             string msg_reply = "";
             MsgToCase.TrimStart();
             MsgToCase.TrimEnd();
-            switch (dictionaryCollections.DS_1_1(MsgToCase))
+            Int16 c= dictionaryCollections.DS_1_1(MsgToCase);
+            switch (c)
             {
                 case 0:
                     msg_reply = "Возврат в главное меню...";
@@ -286,11 +287,11 @@ namespace WashmachineServer.Controllers
                     return DS_0(UserID);
                 case 1:
                 //За сегодня
-                    if (connectToDB.IsUserRecordsExist(UserID, 3))
+                    if (connectToDB.IsUserRecordsExist(UserID, c))
                     {
                         msg_reply = "У вас есть записи в этом интервале: ";
                         SendMessage(UserID, msg_reply);
-                        string [] temp = connectToDB.GetUserRecords(UserID, 3);
+                        string [] temp = connectToDB.GetUserRecords(UserID, c);
                         msg_reply = "";
                         foreach (string record in temp)
                         {
@@ -309,11 +310,11 @@ namespace WashmachineServer.Controllers
                         return 11;
                     }
                 case 2:
-                    if (connectToDB.IsUserRecordsExist(UserID, 1))
+                    if (connectToDB.IsUserRecordsExist(UserID, c))
                     {
                         msg_reply = "У вас есть записи в этом интервале: ";
                         SendMessage(UserID, msg_reply);
-                        string[] temp = connectToDB.GetUserRecords(UserID, 1);
+                        string[] temp = connectToDB.GetUserRecords(UserID, c);
                         msg_reply = "";
                         foreach (string record in temp)
                         {
@@ -332,11 +333,11 @@ namespace WashmachineServer.Controllers
                         return 11;
                     }
                 case 3:
-                    if (connectToDB.IsUserRecordsExist(UserID, 2))
+                    if (connectToDB.IsUserRecordsExist(UserID, c))
                     {
                         msg_reply = "У вас есть записи в этом интервале: ";
                         SendMessage(UserID, msg_reply);
-                        string[] temp = connectToDB.GetUserRecords(UserID, 2);
+                        string[] temp = connectToDB.GetUserRecords(UserID, c);
                         msg_reply = "";
                         foreach (string record in temp)
                         {
@@ -355,11 +356,11 @@ namespace WashmachineServer.Controllers
                         return 11;
                     }
                 case 4:
-                    if (connectToDB.IsUserRecordsExist(UserID, 4))
+                    if (connectToDB.IsUserRecordsExist(UserID, c))
                     {
                         msg_reply = "У вас есть записи в этом интервале: ";
                         SendMessage(UserID, msg_reply);
-                        string[] temp = connectToDB.GetUserRecords(UserID, 4);
+                        string[] temp = connectToDB.GetUserRecords(UserID, c);
                         msg_reply = "";
                         foreach (string record in temp)
                         {
@@ -378,11 +379,11 @@ namespace WashmachineServer.Controllers
                         return 11;
                     }
                 case 5:
-                    if (connectToDB.IsUserRecordsExist(UserID, 5))
+                    if (connectToDB.IsUserRecordsExist(UserID, c))
                     {
                         msg_reply = "У вас есть записи в этом интервале: ";
                         SendMessage(UserID, msg_reply);
-                        string[] temp = connectToDB.GetUserRecords(UserID, 5);
+                        string[] temp = connectToDB.GetUserRecords(UserID, c);
                         msg_reply = "";
                         foreach (string record in temp)
                         {
@@ -401,11 +402,11 @@ namespace WashmachineServer.Controllers
                         return 11;
                     }
                 case 6:
-                    if (connectToDB.IsUserRecordsExist(UserID, 6))
+                    if (connectToDB.IsUserRecordsExist(UserID, c))
                     {
                         msg_reply = "У вас есть записи в этом интервале: ";
                         SendMessage(UserID, msg_reply);
-                        string[] temp = connectToDB.GetUserRecords(UserID, 6);
+                        string[] temp = connectToDB.GetUserRecords(UserID, c);
                         msg_reply = "";
                         foreach (string record in temp)
                         {
