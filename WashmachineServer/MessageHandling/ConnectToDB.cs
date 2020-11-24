@@ -15,7 +15,10 @@ namespace WashmachineServer.MessageHandling
     {
         //Строка подключения
         private string ConnectionString;
+        private readonly string GMT;
+        
         public DbDataView DataView;
+
         //Опционально для подключения через запись в файле конфигурации
         //private const string ConnectionString = _configuration["Config:ConnectionString"];
 
@@ -34,6 +37,7 @@ namespace WashmachineServer.MessageHandling
                     ConnectionString = null;
                     break;
             }
+            GMT = _configuration["Config:GMT"];
             DataView = new DbDataView();
         }
         public string GetConnectionString()
@@ -198,22 +202,22 @@ namespace WashmachineServer.MessageHandling
                 /// В дальнейшем в конфигурации будут добавлены соответствующие настройки
                 /// </summary>
                 case 3:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '3 hours')::date AND (now() + INTERVAL '1 week' + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '@GMT hours')::date AND (now() + INTERVAL '1 week' + INTERVAL '@GMT hours')::date) AND (\"_UserId\" = @UserID))";
                     break;
                 case 2:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '1 week' + INTERVAL '3 hours')::date AND (now() + INTERVAL '2 week'+ INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '1 week' + INTERVAL '@GMT hours')::date AND (now() + INTERVAL '2 week'+ INTERVAL '@GMT hours')::date) AND (\"_UserId\" = @UserID))";
                     break;
                 case 1:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" = (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" = (now() + INTERVAL '@GMT hours')::date) AND (\"_UserId\" = @UserID))";
                     break;
                 case 4:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '3 hours')::date AND (now() + INTERVAL '1 month' + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '@GMT hours')::date AND (now() + INTERVAL '1 month' + INTERVAL '@GMT hours')::date) AND (\"_UserId\" = @UserID))";
                     break;
                 case 5:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 week' + INTERVAL '3 hours')::date AND (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 week' + INTERVAL '@GMT hours')::date AND (now() + INTERVAL '@GMT hours')::date) AND (\"_UserId\" = @UserID))";
                     break;
                 case 6:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 month' + INTERVAL '3 hours')::date AND (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
+                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 month' + INTERVAL '@GMT hours')::date AND (now() + INTERVAL '@GMT hours')::date) AND (\"_UserId\" = @UserID))";
                     break;
                 default:
                     return false;
@@ -221,6 +225,7 @@ namespace WashmachineServer.MessageHandling
             NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
             DB_Connection.Open();
             DB_Command.Parameters.AddWithValue("UserID", UserID);
+            DB_Command.Parameters.AddWithValue("GMT", GMT);
             DB_Command.Prepare();
             bool res = (bool)DB_Command.ExecuteScalar();
             DB_Connection.CloseAsync();
@@ -239,28 +244,28 @@ namespace WashmachineServer.MessageHandling
                 /// В дальнейшем в конфигурации будут добавлены соответствующие настройки
                 /// </summary>
                 case 3:
-                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '3 hours')::date AND (now() + INTERVAL '1 week' + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
-                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\", to_char(now()+INTERVAL'3 hours','Day') AS weekday FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '3 hours')::date AND (now() + INTERVAL '1 week' + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
+                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '@GMT hours')::date AND (now() + INTERVAL '1 week' + INTERVAL '@GMT hours')::date) AND (\"_UserId\" = @UserID)";
+                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\", to_char(now()+INTERVAL '@GMT hours','Day') AS weekday FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '@GMT hours')::date AND (now() + INTERVAL '1 week' + INTERVAL '@GMT hours')::date) AND (\"_UserId\" = @UserID)";
                     break;
                 case 2:
-                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '1 week' + INTERVAL '3 hours')::date AND (now() + INTERVAL '2 week'+ INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
-                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\", to_char(now()+INTERVAL'3 hours','Day') FROM \"Records\" WHERE WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '1 week' + INTERVAL '3 hours')::date AND (now() + INTERVAL '2 week'+ INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
+                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '1 week' + INTERVAL '@GMT hours')::date AND (now() + INTERVAL '2 week'+ INTERVAL'@GMT hours')::date) AND (\"_UserId\" = @UserID)";
+                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\", to_char(now()+INTERVAL '@GMT hours','Day') FROM \"Records\" WHERE WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '1 week' + INTERVAL '@GMT hours')::date AND (now() + INTERVAL '2 week'+ INTERVAL '@GMT hours')::date) AND (\"_UserId\" = @UserID)";
                     break;
                 case 1:
-                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" = (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";//!!!
-                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\", to_char(now()+INTERVAL'3 hours','Day') FROM \"Records\" WHERE (\"RecordDate\" = (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
+                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" = (now() + INTERVAL '@GMT hours')::date) AND (\"_UserId\" = @UserID)";//!!!
+                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\", to_char(now()+INTERVAL'@GMT hours','Day') FROM \"Records\" WHERE (\"RecordDate\" = (now() + INTERVAL'@GMT hours')::date) AND (\"_UserId\" = @UserID)";
                     break;
                 case 4:
-                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '3 hours')::date AND (now() + INTERVAL '1 month' + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
-                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\", to_char(now()+INTERVAL'3 hours','Day') FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '3 hours')::date AND (now() + INTERVAL '1 month' + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
+                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '@GMT hours')::date AND (now() + INTERVAL '1 month' + INTERVAL '@GMT hours')::date) AND (\"_UserId\" = @UserID)";
+                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\", to_char(now()+INTERVAL'@GMT hours','Day') FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '@GMT hours')::date AND (now() + INTERVAL '1 month' + INTERVAL '@GMT hours')::date) AND (\"_UserId\" = @UserID)";
                     break;
                 case 5:
-                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 week' + INTERVAL '3 hours')::date AND (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
-                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\", to_char(now()+INTERVAL'3 hours','Day') FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 week' + INTERVAL '3 hours')::date AND (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
+                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 week' + INTERVAL '@GMT hours')::date AND (now() + INTERVAL '@GMT hours')::date) AND (\"_UserId\" = @UserID)";
+                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\", to_char(now()+INTERVAL'@GMT hours','Day') FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 week' + INTERVAL'@GMT hours')::date AND (now() + INTERVAL '@GMT hours')::date) AND (\"_UserId\" = @UserID)";
                     break;
                 case 6:
-                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 month' + INTERVAL '3 hours')::date AND (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
-                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\", to_char(now()+INTERVAL'3 hours','Day') FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 month' + INTERVAL '3 hours')::date AND (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
+                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 month' + INTERVAL '@GMT hours')::date AND (now() + INTERVAL '@GMT hours')::date) AND (\"_UserId\" = @UserID)";
+                    DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\", to_char(now()+INTERVAL'@GMT hours','Day') FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 month' + INTERVAL'@GMT hours')::date AND (now() + INTERVAL '@GMT hours')::date) AND (\"_UserId\" = @UserID)";
                     break;
                 default:
                     return null;
@@ -271,18 +276,20 @@ namespace WashmachineServer.MessageHandling
             NpgsqlCommand DB_CommandReader = new NpgsqlCommand(DB_Query2, DB_Connection);
             DB_Connection.Open();
             DB_CommandCount.Parameters.AddWithValue("UserID", UserID);
+            DB_CommandCount.Parameters.AddWithValue("GMT", GMT);
             DB_CommandCount.Prepare();
             NpgsqlDataReader reader;
             long count = (long)DB_CommandCount.ExecuteScalar();
             string[] temp = new string[count];
             DB_CommandReader.Parameters.AddWithValue("UserID", UserID);
+            DB_CommandReader.Parameters.AddWithValue("GMT", GMT);
             DB_CommandReader.Prepare();
             reader = DB_CommandReader.ExecuteReader();
             //Нужно добавить ловлю исключений на случай, если вдруг кто-то умудрится в момент получения данных вклинить-таки свой запрос на отправку данных
             int i = 0;
             while (reader.Read())
             {
-                temp[i] = DataView.WeekDayTranslation(reader.GetString(2)) + DataView.NumDateToText(DataView.ConvertFromPostgreDate(reader.GetDate(0).ToString()),false) + " в " + DataView.dbTimeIntervalView(reader.GetInt16(1));
+                temp[i] = DataView.WeekDayTranslation(reader.GetString(2)) + ", " + DataView.NumDateToText(DataView.ConvertFromPostgreDate(reader.GetDate(0).ToString()),true) + " в " + DataView.dbTimeIntervalView(reader.GetInt16(1));
                 i++;
             }
             reader.CloseAsync();
