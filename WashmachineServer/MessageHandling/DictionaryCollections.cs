@@ -103,14 +103,7 @@ namespace WashmachineServer.MessageHandling
             }
             
         }
-        public string ConvertFromPostgreDate(string Date)
-        {
-            string[] NumMas = Regex.Split(Date, "[-]");
-            string dd = NumMas[2];
-            string mm = NumMas[1];
-            string yy = NumMas[0];
-            return dd + "." + mm + "." + yy;
-        }
+        
         //Работа с DialogStage 1 (ответы на главное меню)
         public Int16 DS_1(string msg)
         {

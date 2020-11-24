@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace WashmachineServer.MessageHandling
@@ -40,6 +41,93 @@ namespace WashmachineServer.MessageHandling
                     break;
             }
             return "";
+        }
+
+        public string ConvertFromPostgreDate(string Date)
+        {
+            string[] NumMas = Regex.Split(Date, "[-]");
+            string dd = NumMas[2];
+            string mm = NumMas[1];
+            string yy = NumMas[0];
+            return dd + "." + mm + "." + yy;
+        }
+        //Переводит представление "ДДММГГ" в "ДД-месяц-ГГ"
+        public string NumDateToText(string Date, bool trimYear)
+        {
+            string[] NumMas = Regex.Split(Date, "[.]");
+            string dd = NumMas[0];
+            string mm = NumMas[1];
+            string yy = NumMas[2];
+            string temp = dd + " ";
+            switch (mm)
+            {
+                case "1":
+                    temp += "января";
+                    break;
+                case "2":
+                    temp += "февраля";
+                    break;
+                case "3":
+                    temp += "марта";
+                    break;
+                case "4":
+                    temp += "апреля";
+                    break;
+                case "5":
+                    temp += "мая";
+                    break;
+                case "6":
+                    temp += "июня";
+                    break;
+                case "7":
+                    temp += "июля";
+                    break;
+                case "8":
+                    temp += "августа";
+                    break;
+                case "9":
+                    temp += "сентября";
+                    break;
+                case "10":
+                    temp += "октября";
+                    break;
+                case "11":
+                    temp += "ноября";
+                    break;
+                case "12":
+                    temp += "декабря";
+                    break;
+                default:
+                    break;
+            }
+            if (trimYear)
+                return temp;
+            else
+                return temp += " " + yy;
+        }
+        public string WeekDayTranslation(string ENG_weekday)
+        {
+            string weekday = ENG_weekday.Trim(' ');
+            switch (weekday.ToLower())
+            {
+                case "monday":
+                    return "Понедельник";
+                case "tuesday":
+                    return "Вторник";
+                case "wednesday":
+                    return "Среда";
+                case "thursday":
+                    return "Четверг";
+                case "friday":
+                    return "Пятница";
+                case "saturday":
+                    return "Суббота";
+                case "sunday":
+                    return "Воскресенье";
+                default:
+                    return "Wednesday, ma dudes!";
+            }
+
         }
 
         //Здесь будет метод переработки данных из БД в изображение
