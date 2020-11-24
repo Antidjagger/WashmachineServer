@@ -21,9 +21,8 @@ namespace WashmachineServer.MessageHandling
         public readonly List<string> DS_1_1_GR_ThisMonth = new List<string>() { "4", "4.", "этот месяц", "в этом месяце", "записи в этом месяце", "на этот месяц", "текущий месяц", "записи на текущий месяц", "записи на этот месяц" };
         public readonly List<string> DS_1_1_GR_LastWeek = new List<string>() { "5", "5.", "прошедшая неделя", "на прошедшую неделю", "записи на прошедшей неделе", "на прошедшей неделе", "прошлая неделя", "записи на прошлой неделе", "предыдущая неделя", "записи на предыдущей неделе", "на предыдущей неделе", "записи на прошлую неделю" };
         public readonly List<string> DS_1_1_GR_LastMonth = new List<string>() { "6", "6.", "прошлый месяц", "записи на прошлый месяц", "прошедший месяц", "записи на прошедший месяц", "записи в прошлом месяце", "в прошлом месяце", "на прошлый месяц", "на прошедший месяц", "на предыдущий месяц", "предыдущий месяц", "записи на предыдущий месяц" };
-        private int IsKey;
-        public DictionaryCollections(int isKey)
-        { IsKey = isKey; }
+
+        public DictionaryCollections(){}
         //Проверяет, соответствует ли строка условному формату даты 
         //Возможно, к слиянию с ConvertToPostgreDate
         public bool IsInDateFormat(string Date)
@@ -40,7 +39,7 @@ namespace WashmachineServer.MessageHandling
             } 
         }
         //Конвертирует строку с датой в формат PostgreSQL (MM.DD.YY) либо возвращает пустую строку в случае, если дата некорректна (хотя и соответствует формату...)
-        public string ConverToPostgreDate(string Date)
+        public string ConvertToPostgreDate(string Date)
         {
             string[] NumMas = Regex.Split(Date, "[.]");
             Int16 dd = Int16.Parse(NumMas[0]);
@@ -103,6 +102,14 @@ namespace WashmachineServer.MessageHandling
                 return null;
             }
             
+        }
+        public string ConvertFromPostgreDate(string Date)
+        {
+            string[] NumMas = Regex.Split(Date, "[-]");
+            string dd = NumMas[2];
+            string mm = NumMas[1];
+            string yy = NumMas[0];
+            return dd + "." + mm + "." + yy;
         }
         //Работа с DialogStage 1 (ответы на главное меню)
         public Int16 DS_1(string msg)

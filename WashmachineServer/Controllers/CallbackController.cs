@@ -38,7 +38,7 @@ namespace WashmachineServer.Controllers
         {
             _vkApi = vkApi;
             _configuration = configuration;
-            dictionaryCollections = new DictionaryCollections(0);
+            dictionaryCollections = new DictionaryCollections();
             connectToDB = new ConnectToDB(_configuration);
         }
 
@@ -427,7 +427,7 @@ namespace WashmachineServer.Controllers
                 default:
                     if (dictionaryCollections.IsInDateFormat(msg))
                     {
-                        string DateMsg = dictionaryCollections.ConverToPostgreDate(msg);
+                        string DateMsg = dictionaryCollections.ConvertToPostgreDate(msg);
                         if (DateMsg != null)
                         {
                             if (connectToDB.IsUserRecordsExist(UserID, msg))

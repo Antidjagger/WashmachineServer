@@ -88,7 +88,6 @@ namespace WashmachineServer.MessageHandling
         public bool IsUserExist(long UserID)
         {
             string DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Users\" WHERE \"UserID\" = " + UserID.ToString() + ")";
-
             NpgsqlConnection DB_Connection = new NpgsqlConnection(ConnectionString);
             NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
             DB_Connection.Open(); //Открываем соединение.
@@ -134,35 +133,25 @@ namespace WashmachineServer.MessageHandling
             if (IsUserExist(UserID))
             {
                 string DB_Query = "SELECT \"IsRegistred\" FROM \"Users\" WHERE \"UserID\" = " + UserID.ToString();
-
                 NpgsqlConnection DB_Connection = new NpgsqlConnection(ConnectionString);
                 NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
                 DB_Connection.Open(); 
-                NpgsqlDataReader reader;
-                reader = DB_Command.ExecuteReader();
-
                 bool res;
-                while (reader.Read())
+                try
                 {
-                    try
-                    {
-                        res = reader.GetBoolean(0);
-                        DB_Connection.CloseAsync();
-                        return res;
-
-                    }
-                    ///<remarks>
-                    ///TODO: Нужно будет добавить набор исключений для случаев, когда нет связи с БД. В принципе, пользователя это не должно волновать, но из админ-панели
-                    ///должна быть возможность просмотреть все возможные проблемы без перезапуска сервера
-                    ///</remarks>
-                    catch
-                    {
-                        DB_Connection.CloseAsync(); 
-                        ErrorLogWriting("The value could not be retrieved from the database or the value was read incorrectly", 2); 
-                    }
-                    
+                    res = (bool)DB_Command.ExecuteScalar();
+                    DB_Connection.CloseAsync();
+                    return res;
                 }
-                
+                ///<remarks>
+                ///TODO: Нужно будет добавить набор исключений для случаев, когда нет связи с БД. В принципе, пользователя это не должно волновать, но из админ-панели
+                ///должна быть возможность просмотреть все возможные проблемы без перезапуска сервера
+                ///</remarks>
+                catch
+                {
+                    DB_Connection.CloseAsync(); 
+                    ErrorLogWriting("The value could not be retrieved from the database or the value was read incorrectly", 2); 
+                }
             }
             else
             {
@@ -231,8 +220,7 @@ namespace WashmachineServer.MessageHandling
             DB_Connection.Open();
             DB_Command.Parameters.AddWithValue("UserID", UserID);
             DB_Command.Prepare();
-            bool res = true;
-            res = (bool)DB_Command.ExecuteScalar();
+            bool res = (bool)DB_Command.ExecuteScalar();
             DB_Connection.CloseAsync();
             return res;
         }
@@ -249,53 +237,55 @@ namespace WashmachineServer.MessageHandling
                 /// В дальнейшем в конфигурации будут добавлены соответствующие настройки
                 /// </summary>
                 case 3:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '3 hours')::date AND (now() + INTERVAL '1 week' + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
+                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '3 hours')::date AND (now() + INTERVAL '1 week' + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
                     DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '3 hours')::date AND (now() + INTERVAL '1 week' + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
                     break;
                 case 2:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '1 week' + INTERVAL '3 hours')::date AND (now() + INTERVAL '2 week'+ INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
+                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '1 week' + INTERVAL '3 hours')::date AND (now() + INTERVAL '2 week'+ INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
                     DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '1 week' + INTERVAL '3 hours')::date AND (now() + INTERVAL '2 week'+ INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
                     break;
                 case 1:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" = (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";//!!!
+                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" = (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";//!!!
                     DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" = (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
                     break;
                 case 4:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '3 hours')::date AND (now() + INTERVAL '1 month' + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
+                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '3 hours')::date AND (now() + INTERVAL '1 month' + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
                     DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() + INTERVAL '3 hours')::date AND (now() + INTERVAL '1 month' + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
                     break;
                 case 5:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 week' + INTERVAL '3 hours')::date AND (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
+                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 week' + INTERVAL '3 hours')::date AND (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
                     DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 week' + INTERVAL '3 hours')::date AND (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
                     break;
                 case 6:
-                    DB_Query = "SELECT EXISTS (SELECT 1 FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 month' + INTERVAL '3 hours')::date AND (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID))";
+                    DB_Query = "SELECT COUNT(*) FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 month' + INTERVAL '3 hours')::date AND (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
                     DB_Query2 = "SELECT \"RecordDate\", \"RecordTimezone\" FROM \"Records\" WHERE (\"RecordDate\" BETWEEN (now() - INTERVAL '1 month' + INTERVAL '3 hours')::date AND (now() + INTERVAL '3 hours')::date) AND (\"_UserId\" = @UserID)";
                     break;
                 default:
                     return null;
             }
+            DictionaryCollections dc = new DictionaryCollections();
             NpgsqlConnection DB_Connection = new NpgsqlConnection(ConnectionString);
             NpgsqlCommand DB_CommandCount = new NpgsqlCommand(DB_Query, DB_Connection);
             NpgsqlCommand DB_CommandReader = new NpgsqlCommand(DB_Query2, DB_Connection);
             DB_Connection.Open();
             DB_CommandCount.Parameters.AddWithValue("UserID", UserID);
             DB_CommandCount.Prepare();
-            Int16 count = (short)DB_CommandReader.ExecuteScalar();
+            NpgsqlDataReader reader;
+            long count = (long)DB_CommandCount.ExecuteScalar();
             string[] temp = new string[count];
             DB_CommandReader.Parameters.AddWithValue("UserID", UserID);
             DB_CommandReader.Prepare();
-            NpgsqlDataReader reader;
+            
             DbDataView dataView = new DbDataView();
             reader = DB_CommandReader.ExecuteReader();
             //Нужно добавить ловлю исключений на случай, если вдруг кто-то умудрится в момент получения данных вклинить-таки свой запрос на отправку данных
+            int i = 0;
             while (reader.Read())
             {
-                int i = 0;
-                temp[i] = reader.GetString(0) + " в " + dataView.dbTimeIntervalView(reader.GetInt16(1));
-                DB_Connection.CloseAsync();
+                temp[i] = dc.ConvertFromPostgreDate(reader.GetDate(0).ToString()) + " в " + dataView.dbTimeIntervalView(reader.GetInt16(1));
                 i++;
             }
+            reader.CloseAsync();
             DB_Connection.CloseAsync();
             return temp;
             
@@ -323,6 +313,7 @@ namespace WashmachineServer.MessageHandling
                 {
                     res = reader.GetInt16(0);
                     DB_Connection.CloseAsync();
+                    reader.CloseAsync();
                     return res;
                 }
                 catch
@@ -383,10 +374,12 @@ namespace WashmachineServer.MessageHandling
                 ///</remarks>
                 catch 
                 {
+                    reader.CloseAsync();
                     DB_Connection.CloseAsync();
                     ErrorLogWriting("The value could not be retrieved from the database or the value was read incorrectly", 2); 
                 }
             }
+            reader.CloseAsync();
             DB_Connection.CloseAsync();
             return UserList;
                 
