@@ -32,19 +32,21 @@ namespace WashmachineServer.Controllers
         private readonly IConfiguration _configuration;
         private readonly IVkApi _vkApi;
         private readonly DictionaryCollections dictionaryCollections;
+        private ConnectToDB connectToDB;
         //Конструктор
         public CallbackController(IVkApi vkApi, IConfiguration configuration)
         {
             _vkApi = vkApi;
             _configuration = configuration;
             dictionaryCollections = new DictionaryCollections(0);
+            connectToDB = new ConnectToDB(_configuration);
         }
 
 
         [HttpPost]
         public IActionResult Callback([FromBody] Updates updates)
         {
-            ConnectToDB connectToDB = new ConnectToDB(_configuration);
+            
             connectToDB.MsgAPILogWriting(updates.Type);
             // Тип события
             switch (updates.Type)
@@ -87,7 +89,7 @@ namespace WashmachineServer.Controllers
                                             break;
                                         //Просмотреть свои записи: выбор вариантов
                                         case 11:
-                                            connectToDB.SetUserDialogStage(UserID, DS_1_1(UserID, msg.Text,connectToDB));
+                                            connectToDB.SetUserDialogStage(UserID, DS_1_1(UserID, msg.Text));
                                             break;
                                         //Записаться на стирку: выбор вариантов
                                         case 12:
@@ -186,11 +188,14 @@ namespace WashmachineServer.Controllers
         {
             
             var uploadServer = _vkApi.Photo.GetMessagesUploadServer(UserID);
+            connectToDB.MsgAPILogWriting("Upload server url = " + uploadServer.UploadUrl);
             //var response = await UploadFileFromUrl(uploadServer.UploadUrl, urlway, filetype);
             var response = await UploadFileFromUrl(uploadServer.UploadUrl, "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
+            connectToDB.MsgAPILogWriting("Upload server url = " + response);
             if (response == null)
             {
                 SendMessage(UserID, "Не удалось отправить фотографию");
+
                 throw new Exception("Не удалось отправить фотографию");
             }
             else
@@ -272,7 +277,7 @@ namespace WashmachineServer.Controllers
             }
             
         }
-        public Int16 DS_1_1(long UserID, string msg, ConnectToDB connect)
+        public Int16 DS_1_1(long UserID, string msg)
         {
             string MsgToCase = msg.ToLower();
             string msg_reply = "";
@@ -286,7 +291,7 @@ namespace WashmachineServer.Controllers
                     return DS_0(UserID);
                 case 1:
                 //За сегодня
-                    if (connect.IsUserRecordsExist(UserID, 3))
+                    if (connectToDB.IsUserRecordsExist(UserID, 3))
                     {
                         msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
                         SendMessage(UserID, msg_reply);
@@ -299,7 +304,7 @@ namespace WashmachineServer.Controllers
                         return 11;
                     }
                 case 2:
-                    if (connect.IsUserRecordsExist(UserID, 1))
+                    if (connectToDB.IsUserRecordsExist(UserID, 1))
                     {
                         msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
                         SendMessage(UserID, msg_reply);
@@ -312,7 +317,7 @@ namespace WashmachineServer.Controllers
                         return 11;
                     }
                 case 3:
-                    if (connect.IsUserRecordsExist(UserID, 2))
+                    if (connectToDB.IsUserRecordsExist(UserID, 2))
                     {
                         msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
                         SendMessage(UserID, msg_reply);
@@ -325,7 +330,7 @@ namespace WashmachineServer.Controllers
                         return 11;
                     }
                 case 4:
-                    if (connect.IsUserRecordsExist(UserID, 4))
+                    if (connectToDB.IsUserRecordsExist(UserID, 4))
                     {
                         msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
                         SendMessage(UserID, msg_reply);
@@ -338,7 +343,7 @@ namespace WashmachineServer.Controllers
                         return 11;
                     }
                 case 5:
-                    if (connect.IsUserRecordsExist(UserID, 5))
+                    if (connectToDB.IsUserRecordsExist(UserID, 5))
                     {
                         msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
                         SendMessage(UserID, msg_reply);
@@ -351,7 +356,7 @@ namespace WashmachineServer.Controllers
                         return 11;
                     }
                 case 6:
-                    if (connect.IsUserRecordsExist(UserID, 6))
+                    if (connectToDB.IsUserRecordsExist(UserID, 6))
                     {
                         msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
                         SendMessage(UserID, msg_reply);
@@ -369,7 +374,7 @@ namespace WashmachineServer.Controllers
                         string DateMsg = dictionaryCollections.ConverToPostgreDate(msg);
                         if (DateMsg != null)
                         {
-                            if (connect.IsUserRecordsExist(UserID, msg))
+                            if (connectToDB.IsUserRecordsExist(UserID, msg))
                             {
                                 msg_reply = "У вас есть записи в этом интервале \nВозврат в главное меню...";
                                 SendMessage(UserID, msg_reply);
