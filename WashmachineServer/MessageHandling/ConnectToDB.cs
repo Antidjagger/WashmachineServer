@@ -295,7 +295,10 @@ namespace WashmachineServer.MessageHandling
                 DB_Connection.CloseAsync();
                 i++;
             }
+            DB_Connection.CloseAsync();
             return temp;
+            
+
         }
         //public bool GetUserRecords(long UserID, Int16 interval)
         //{
