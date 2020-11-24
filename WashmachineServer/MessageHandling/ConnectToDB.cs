@@ -225,7 +225,7 @@ namespace WashmachineServer.MessageHandling
             NpgsqlCommand DB_Command = new NpgsqlCommand(DB_Query, DB_Connection);
             DB_Connection.Open();
             DB_Command.Parameters.AddWithValue("UserID", UserID);
-            DB_Command.Parameters.AddWithValue("GMT", "'" + GMT + " hours");
+            DB_Command.Parameters.AddWithValue("GMT", "'" + GMT + " hours'");
             DB_Command.Prepare();
             bool res = (bool)DB_Command.ExecuteScalar();
             DB_Connection.CloseAsync();
@@ -276,13 +276,13 @@ namespace WashmachineServer.MessageHandling
             NpgsqlCommand DB_CommandReader = new NpgsqlCommand(DB_Query2, DB_Connection);
             DB_Connection.Open();
             DB_CommandCount.Parameters.AddWithValue("UserID", UserID);
-            DB_CommandCount.Parameters.AddWithValue("GMT", "'" + GMT + " hours");
+            DB_CommandCount.Parameters.AddWithValue("GMT", "'" + GMT + " hours'");
             DB_CommandCount.Prepare();
             NpgsqlDataReader reader;
             long count = (long)DB_CommandCount.ExecuteScalar();
             string[] temp = new string[count];
             DB_CommandReader.Parameters.AddWithValue("UserID", UserID);
-            DB_CommandReader.Parameters.AddWithValue("GMT", "'" + GMT + " hours");
+            DB_CommandReader.Parameters.AddWithValue("GMT", "'" + GMT + " hours'");
             DB_CommandReader.Prepare();
             reader = DB_CommandReader.ExecuteReader();
             //Нужно добавить ловлю исключений на случай, если вдруг кто-то умудрится в момент получения данных вклинить-таки свой запрос на отправку данных
