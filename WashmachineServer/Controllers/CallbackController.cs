@@ -278,7 +278,7 @@ namespace WashmachineServer.Controllers
             string msg_reply = "";
             MsgToCase.TrimStart();
             MsgToCase.TrimEnd();
-            Int16 c= dictionaryCollections.DS_1_1(MsgToCase);
+            short c = dictionaryCollections.DS_1_1(MsgToCase);
             switch (c)
             {
                 case 0:

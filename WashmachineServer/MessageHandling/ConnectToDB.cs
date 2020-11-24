@@ -195,11 +195,11 @@ namespace WashmachineServer.MessageHandling
 
         }
         //Для заготовленных промежутков
-        public bool IsUserRecordsExist(long UserID, Int16 interval)
+        public bool IsUserRecordsExist(long UserID, short interval)
         {
             NpgsqlConnection DB_Connection = new NpgsqlConnection(ConnectionString); 
 
-            string DB_Query = ""; 
+            string DB_Query; 
             switch (interval)
             {
                 /// <summary>
@@ -231,7 +231,8 @@ namespace WashmachineServer.MessageHandling
             DB_Connection.Open();
             DB_Command.Parameters.AddWithValue("UserID", UserID);
             DB_Command.Prepare();
-            bool res = (bool)DB_Command.ExecuteScalar();
+            bool res = true;
+            res = (bool)DB_Command.ExecuteScalar();
             DB_Connection.CloseAsync();
             return res;
         }
