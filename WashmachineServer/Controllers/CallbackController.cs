@@ -184,15 +184,15 @@ namespace WashmachineServer.Controllers
             });
         }
         //Отправка сообщения и фото
-        public async void SendMessage(long UserID, string msg, string urlway, string filetype)
+        public  void SendMessage(long UserID, string msg, string urlway, string filetype)
         {
             
             var uploadServer = _vkApi.Photo.GetMessagesUploadServer(UserID);
             connectToDB.MainLogWriting("Попытка отправки сообщения с фото...");
             connectToDB.MsgAPILogWriting("Upload server url = " + uploadServer.UploadUrl);
             //var response = await UploadFileFromUrl(uploadServer.UploadUrl, urlway, filetype);
-            var response = await UploadFileFromUrl(uploadServer.UploadUrl, "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
-            connectToDB.MsgAPILogWriting("Upload server url = " + response);
+            var response = UploadFileFromUrl(uploadServer.UploadUrl, "https://www.gstatic.com/webp/gallery/1.jpg", "jpg");
+            connectToDB.MsgAPILogWriting("Upload server url = " + response.Result);
             if (response == null)
             {
                 SendMessage(UserID, "Не удалось отправить фотографию");
@@ -202,7 +202,7 @@ namespace WashmachineServer.Controllers
             else
             {
                 // Сохранить загруженный файл
-                var attachment = _vkApi.Photo.SaveMessagesPhoto(response);
+                var attachment = _vkApi.Photo.SaveMessagesPhoto(response.Result);
                 _vkApi.Messages.Send(new MessagesSendParams
                 {
                     RandomId = new DateTime().Millisecond,
